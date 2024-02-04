@@ -1,7 +1,5 @@
 """Robot."""
-
 import PiBot
-
 
 class Robot:
     """Robot."""
@@ -34,12 +32,6 @@ class Robot:
         self.robot.set_right_wheel_speed(10)
 
 
-def main():
-    """Create a Robot object and spin it."""
-    robot = Robot()
-    robot.spin()
-
-
 def test():
     """Test."""
     robot = Robot()
@@ -47,7 +39,7 @@ def test():
     while not robot.shutdown:
         robot.sense()
         robot.plan()
-        robot.robot.sleep(0.01)
+        robot.robot.sleep(0.05)
 
 
 if __name__ == "__main__":
