@@ -1,7 +1,4 @@
- """Robot."""
-
 import PiBot
-
 
 class Robot:
     """Robot class."""
