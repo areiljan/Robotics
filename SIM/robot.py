@@ -1,46 +1,54 @@
+"""Robot."""
+
 import PiBot
 
+
 class Robot:
-    """Robot class."""
+    """Robot."""
 
     def __init__(self):
-        """Initialize class."""
+        """Initialize the robot."""
         self.robot = PiBot.PiBot()
+        self.value = 0
         self.shutdown = False
 
     def set_robot(self, robot: PiBot.PiBot()) -> None:
-        """
-        Set the reference to the robot instance.
-
-        NB! This is required for automatic testing.
-        You are not expected to call this method in your code.
-
-        Arguments:
-          robot -- the reference to the robot instance.
-        """
+        """Set the reference to PiBot object."""
         self.robot = robot
 
-    def spin(self):
-        """Call sense, plan, act methods cyclically."""
-        self.robot.set_wheels_speed(30)
-        self.robot.sleep(2)
-        self.robot.set_wheels_speed(0)
-
     def sense(self):
-        """Sense."""
+        """Read values from sensors via PiBot  API into class variables (self)."""
+        self.value = self.robot.get_front_middle_laser()
+
 
     def plan(self):
-        """Plan."""
+        """Detect the robots distance from the wall."""
+        if self.value is None or self.value > 18:
+            self.robot.act()
+        else:
+            self.robot.shutdown = True
 
     def act(self):
-        """Act.a"""
+        """Drive the robot forwards."""
+        self.robot.set_left_wheel_speed(10)
+        self.robot.set_right_wheel_speed(10)
 
 
 def main():
-    """Create a Robot class object and run it."""
+    """Create a Robot object and spin it."""
     robot = Robot()
     robot.spin()
 
 
+def test():
+    """Test."""
+    robot = Robot()
+
+    while not robot.shutdown:
+        robot.sense()
+        robot.plan()
+        robot.robot.sleep(0.01)
+
+
 if __name__ == "__main__":
-    main()
+    test()
