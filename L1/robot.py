@@ -33,7 +33,7 @@ class Robot:
             self.line_direction = -1
 
     def plan(self):
-        """Plan"""
+        """Plan."""
         if self.line_direction == 0:
             self.right_wheel = 100
             self.left_wheel = 100
@@ -45,7 +45,7 @@ class Robot:
             self.left_wheel = 100
 
     def act(self):
-        """Act"""
+        """Act."""
         self.robot.set_left_wheel_speed(self.left_wheel)
         self.robot.set_right_wheel_speed(self.right_wheel)
 
