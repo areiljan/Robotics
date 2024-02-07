@@ -53,6 +53,9 @@ class Robot:
         """Execute the spin loop."""
         while not self.shutdown:
             timestamp = self.robot.get_time()
+            self.sense()
+            self.plan()
+            self.act()
             print(f'timestamp is {timestamp}')
             self.robot.sleep(0.05)
 
@@ -67,10 +70,12 @@ class Robot:
         """
         return self.line_direction
 
+
 def main():
     """Execute the main loop."""
     robot = Robot()
     robot.spin()
+
 
 if __name__ == "__main__":
     main()
