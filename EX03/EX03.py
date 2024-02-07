@@ -41,12 +41,16 @@ class Robot:
         # Your code here...
         total_turn_right = self.robot.get_right_wheel_encoder()
         total_turn_left = self.robot.get_left_wheel_encoder()
+        self.robot.sleep(0.05)
+        left_difference = self.robot.get_left_wheel_encoder() - total_turn_left
+        right_difference = self.robot.get_right_wheel_encoder() - total_turn_right
         wheel_diameter = self.robot.WHEEL_DIAMETER
         wheel_circumference = wheel_diameter * math.pi
-
+        self.left_velocity = ((left_difference * wheel_circumference) / 360) / 0.05
+        self.right_velocity = ((right_difference * wheel_circumference) / 360) / 0.05
 
     def spin(self):
-        """Main loop."""
+        """Spin."""
         while not self.shutdown:
             self.sense()
             timestamp = self.robot.get_time()
@@ -59,7 +63,7 @@ class Robot:
 
 
 def main():
-    """Main entry."""
+    """Test."""
     robot = Robot()
     robot.spin()
 
