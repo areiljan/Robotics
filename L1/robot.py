@@ -35,14 +35,14 @@ class Robot:
     def plan(self):
         """Plan."""
         if self.line_direction == 0:
-            self.right_wheel = 100
-            self.left_wheel = 100
+            self.right_wheel = 8
+            self.left_wheel = 8
         elif self.line_direction == 1:
-            self.right_wheel = 100
-            self.left_wheel = 50
+            self.right_wheel = 10
+            self.left_wheel = 6
         else:
-            self.right_wheel = 50
-            self.left_wheel = 100
+            self.right_wheel = 6
+            self.left_wheel = 10
 
     def act(self):
         """Act."""
@@ -55,8 +55,6 @@ class Robot:
             timestamp = self.robot.get_time()
             print(f'timestamp is {timestamp}')
             self.robot.sleep(0.05)
-            if self.robot.get_time() > 20:
-                self.shutdown = True
 
     def get_line_direction(self):
         """
@@ -69,23 +67,10 @@ class Robot:
         """
         return self.line_direction
 
-
 def main():
     """Execute the main loop."""
     robot = Robot()
     robot.spin()
 
-
-def test():
-    """Test."""
-    robot = Robot()
-    import leaning_right
-    data = leaning_right.get_data()
-    robot.robot.load_data_profile(data)
-    for i in range(999):
-        print(f"left_encoder = {robot.robot.get_rightmost_line_sensor()}")
-        robot.robot.sleep(0.05)
-
-
 if __name__ == "__main__":
-    test()
+    main()
