@@ -33,6 +33,7 @@ class Robot:
             self.line_direction = -1
 
     def plan(self):
+        """Plan"""
         if self.line_direction == 0:
             self.right_wheel = 100
             self.left_wheel = 100
@@ -43,11 +44,10 @@ class Robot:
             self.right_wheel = 50
             self.left_wheel = 100
 
-    def act(self, direction):
+    def act(self):
         """Act"""
         self.robot.set_left_wheel_speed(self.left_wheel)
         self.robot.set_right_wheel_speed(self.right_wheel)
-
 
     def spin(self):
         """Execute the spin loop."""
@@ -57,7 +57,6 @@ class Robot:
             self.robot.sleep(0.05)
             if self.robot.get_time() > 20:
                 self.shutdown = True
-
 
     def get_line_direction(self):
         """
