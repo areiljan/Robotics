@@ -8,8 +8,10 @@ class Robot:
 
     def __init__(self):
         """Class constructor."""
-        self.total_turn_left = None
-        self.total_turn_right = None
+        self.previous_turn_left = None
+        self.previous_turn_right = None
+        self.current_turn_left = None
+        self.current_turn_right = None
         self.robot = PiBot.PiBot()
         self.shutdown = False
         self.time = 0
@@ -28,11 +30,10 @@ class Robot:
         """
         wheel_diameter = self.robot.WHEEL_DIAMETER
         wheel_circumference = wheel_diameter * math.pi
-        left_difference = self.total_turn_left - self.robot.get_left_wheel_encoder()
-        time = self.robot.get_time() - self.timestamp
-        if time != 0:
-            right_velocity = ((left_difference * wheel_circumference) / 360) / time
-            return right_velocity
+        if self.previous_turn_left:
+            left_difference = self.current_turn_left - self.previous_turn_left
+            left_velocity = ((left_difference * wheel_circumference) / 360) / 0.05
+            return left_velocity
         return 0
 
     def get_right_velocity(self) -> float:
@@ -44,18 +45,19 @@ class Robot:
         """
         wheel_diameter = self.robot.WHEEL_DIAMETER
         wheel_circumference = wheel_diameter * math.pi
-        right_difference = self.total_turn_right - self.robot.get_right_wheel_encoder()
-        time = self.robot.get_time() - self.timestamp
-        if time != 0:
-            right_velocity = ((right_difference * wheel_circumference) / 360) / time
+        if self.previous_turn_right:
+            right_difference = self.current_turn_right - self.previous_turn_right
+            right_velocity = ((right_difference * wheel_circumference) / 360) / 0.05
             return right_velocity
         return 0
 
     def sense(self):
         """Read the sensor values from the PiBot API."""
         # Your code here...
-        self.total_turn_right = self.robot.get_right_wheel_encoder()
-        self.total_turn_left = self.robot.get_left_wheel_encoder()
+        self.previous_turn_right = self.current_turn_right
+        self.previous_turn_left = self.current_turn_left
+        self.current_turn_right = self.robot.get_right_wheel_encoder()
+        self.current_turn_left = self.robot.get_left_wheel_encoder()
 
     def spin(self):
         """Spin."""
