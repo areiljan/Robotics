@@ -30,8 +30,10 @@ class Robot:
         wheel_circumference = wheel_diameter * math.pi
         left_difference = self.total_turn_left - self.robot.get_left_wheel_encoder()
         time = self.robot.get_time() - self.timestamp
-        left_velocity = ((left_difference * wheel_circumference) / 360) / time
-        return left_velocity
+        if time != 0:
+            right_velocity = ((left_difference * wheel_circumference) / 360) / time
+            return right_velocity
+        return 0
 
     def get_right_velocity(self) -> float:
         """
@@ -44,8 +46,10 @@ class Robot:
         wheel_circumference = wheel_diameter * math.pi
         right_difference = self.total_turn_right - self.robot.get_right_wheel_encoder()
         time = self.robot.get_time() - self.timestamp
-        right_velocity = ((right_difference * wheel_circumference) / 360) / time
-        return right_velocity
+        if time != 0:
+            right_velocity = ((right_difference * wheel_circumference) / 360) / time
+            return right_velocity
+        return 0
 
     def sense(self):
         """Read the sensor values from the PiBot API."""
