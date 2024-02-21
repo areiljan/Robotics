@@ -26,14 +26,15 @@ class Robot:
         Returns:
           None if filter is empty, filtered value otherwise.
         """
-        if not self.filter:
-            return None
-        else:
-            return statistics.median(self.filter)
         if self.front_middle_laser is not None:
             self.filter.append(self.laser_reading)
             if len(self.filter) > 5:
                 self.filter.pop(0)
+        if not self.filter:
+            return None
+        else:
+            return statistics.median(self.filter)
+
 
     def sense(self):
         """Sense method as per SPA architecture."""
