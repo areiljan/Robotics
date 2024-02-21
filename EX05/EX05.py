@@ -26,7 +26,7 @@ class Robot:
         Returns:
           None if filter is empty, filtered value otherwise.
         """
-        if self.front_middle_laser is not None:
+        if self.laser_reading is not None:
             self.filter.append(self.laser_reading)
             if len(self.filter) > 5:
                 self.filter.pop(0)
