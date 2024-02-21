@@ -26,12 +26,12 @@ class Robot:
         Returns:
           None if filter is empty, filtered value otherwise.
         """
-        self.filter.append(self.robot.get_front_middle_laser())
+        self.filter.put(self.robot.get_front_middle_laser())
         if self.filter == [] and self.front_middle_laser is None:
             return None
         if self.filter.full:
             self.filter.get()
-        self.filter.append(self.front_middle_laser)
+        self.filter.put(self.front_middle_laser)
         return statistics.median(list(self.filter.queue))
 
 
