@@ -3,9 +3,9 @@ import statistics
 
 import PiBot
 
+
 class Robot:
     """Robot class."""
-
 
     def __init__(self):
         """Initialize object."""
