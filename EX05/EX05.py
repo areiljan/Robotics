@@ -2,7 +2,7 @@
 import statistics
 
 import PiBot
-import queue
+from queue import Queue
 
 
 class Robot:
@@ -12,8 +12,8 @@ class Robot:
         """Initialize object."""
         self.robot = PiBot.PiBot()
         self.shutdown = False
-        self.filter = queue(maxsize=5)
-        self.value = 0;
+        self.filter = Queue(maxsize=5)
+        self.value = 0
 
     def set_robot(self, robot: PiBot.PiBot()) -> None:
         """Set the PiBot reference."""
