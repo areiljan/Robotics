@@ -10,10 +10,10 @@ class Robot:
 
     def __init__(self):
         """Initialize object."""
+        self.front_middle_laser = None
         self.robot = PiBot.PiBot()
         self.shutdown = False
         self.filter = Queue(maxsize=5)
-        self.value = 0
 
     def set_robot(self, robot: PiBot.PiBot()) -> None:
         """Set the PiBot reference."""
@@ -38,7 +38,7 @@ class Robot:
 
     def sense(self):
         """Sense method as per SPA architecture."""
-        self.value = self.robot.get_front_middle_laser()
+        self.front_middle_laser = self.robot.get_front_middle_laser()
 
 
     def spin(self):
