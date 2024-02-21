@@ -29,7 +29,7 @@ class Robot:
         if not self.filter:
             return None
         else:
-            return median(self.filter)
+            return statistics.median(self.filter)
         if self.front_middle_laser is not None:
             self.filter.append(self.laser_reading)
             if len(self.filter) > 5:
@@ -37,7 +37,6 @@ class Robot:
 
     def sense(self):
         """Sense method as per SPA architecture."""
-        self.front_middle_laser = self.front_middle_laser()
         self.laser_reading = self.robot.get_front_middle_laser()
 
 
