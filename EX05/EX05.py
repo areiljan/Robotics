@@ -6,6 +6,7 @@ import PiBot
 class Robot:
     """Robot class."""
 
+
     def __init__(self):
         """Initialize object."""
         self.front_middle_laser = None
@@ -13,7 +14,6 @@ class Robot:
         self.shutdown = False
         self.filter = []
         self.laser_reading = None
-
 
     def set_robot(self, robot: PiBot.PiBot()) -> None:
         """Set the PiBot reference."""
@@ -35,11 +35,9 @@ class Robot:
         else:
             return statistics.median(self.filter)
 
-
     def sense(self):
         """Sense method as per SPA architecture."""
         self.laser_reading = self.robot.get_front_middle_laser()
-
 
     def spin(self):
         """Execute the spin loop."""
