@@ -37,7 +37,7 @@ class Robot:
 
     def sense(self):
         """Sense method as per SPA architecture."""
-        self.front_middle_laser = self.front_middle_laser
+        self.front_middle_laser = self.front_middle_laser()
         self.laser_reading = self.robot.get_front_middle_laser()
 
 
