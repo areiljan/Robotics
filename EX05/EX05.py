@@ -26,7 +26,7 @@ class Robot:
         Returns:
           None if filter is empty, filtered value otherwise.
         """
-        self.filter.put(self.get_front_middle_laser)
+        self.filter.put(self.get_front_middle_laser())
         if self.filter == [] and self.front_middle_laser is None:
             return None
         if self.filter.full:
