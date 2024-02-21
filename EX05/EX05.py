@@ -31,7 +31,7 @@ class Robot:
             return None
         if self.filter.full:
             self.filter.get()
-        self.filter.put(self.front_middle_laser)
+        self.filter.put(self.robot.get_front_middle_laser)
         return statistics.median(list(self.filter.queue))
 
 
