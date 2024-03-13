@@ -63,9 +63,10 @@ class Robot:
         if(previous_left_error):
             left_error_diff = left_error - previous_left_error
 
-
-        self.pid_power_right = p * right_error + i * right_error_sum + d * right_error_diff
-        self.pid_power_left = p * left_error + i * left_error_sum + d * left_error_diff
+        if(right_error_diff):
+            self.pid_power_right = p * right_error + i * right_error_sum + d * right_error_diff
+        if(left_error_diff):
+            self.pid_power_left = p * left_error + i * left_error_sum + d * left_error_diff
 
 
     def set_left_wheel_speed(self, speed: float):
