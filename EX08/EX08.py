@@ -9,6 +9,8 @@ class Robot:
         self.robot = PiBot.PiBot()
         self.previous_turn_right = 0
         self.previous_turn_left = 0
+        self.right_setpoint = 0
+        self.left_setpoint = 0
         self.current_turn_right = 0  # Setpoint
         self.current_turn_left = 0
         self.pid_power_right = 0
