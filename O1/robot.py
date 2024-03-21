@@ -1,6 +1,7 @@
 """EX04 - Objects."""
+import math
+import statistics
 
-import PiBot
 
 class Robot:
     """The robot class."""
@@ -9,32 +10,31 @@ class Robot:
         """Class initialization."""
         self.robot = PiBot.PiBot()
         self.shutdown = False
-        self.last = "forward"
-        self.state = "calibrate"
+        self.state = "unknown"
 
         self.left_wheel_speed = 10
         self.right_wheel_speed = 10
 
-        self.on_crossway = False
-        self.direction_index = 0
+        self.wheel_circumference = self.robot.WHEEL_DIAMETER * math.pi
+        self.machine_circumference = self.robot.AXIS_LENGTH * math.pi
 
-        self.rightsecond_seen = None
-        self.leftsecond_seen = None
-
-        self.crossway_time_start = None
-
-        self.last_rotation = 0
+        self.object_center_points = []
+        self.object_start = 0
+        self.object_end = 0
 
         self.current_right_encoder = 0
         self.current_left_encoder = 0
+        self.current_rotation = 0
 
         self.max_right_encoder = 0
         self.max_left_encoder = 0
 
         self.left_factor = 1
         self.right_factor = 1
-
         self.calibrated = False
+
+        self.sensor_data = []
+        self.middle_laser = 0
 
     def set_robot(self, robot: PiBot.PiBot()) -> None:
         """Set robot reference."""
@@ -54,14 +54,55 @@ class Robot:
 
         print("Corrections made", self.right_factor, self.left_factor)
 
-    def sense(self):
-        """Sense method as per SPA architecture."""
-        self.current_right_encoder = self.robot.get_right_wheel_encoder()
-        self.current_left_encoder = self.robot.get_left_wheel_encoder()
+    def add_objects(self) -> list:
+        """
+        Return the list with the detected objects so far.
 
-        self.current_rotation = self.robot.get_rotation()
+        (i.e., add new objects to the list as you detect them).
 
-        self.time = self.robot.get_time()
+        Returns:
+          The list with detected object angles, the angles are in
+          degrees [0..360), 0 degrees being the start angle and following
+          the right-hand rule (e.g., turning left 90 degrees is 90, turning
+          right 90 degrees is 270 degrees).
+        """
+        middle_laser = self.get_front_middle_laser()
+        if middle_laser is not None and 0.1 < middle_laser <= 0.45:
+            if self.object_start == 0:
+                self.object_start = self.current_right_encoder
+            self.object_end = self.current_right_encoder
+        else:
+            if self.object_start != 0:
+                difference = abs(self.object_end - self.object_start)
+                meters_turned = difference / 360 * self.wheel_circumference
+                rotation = meters_turned / self.machine_circumference * 360
+                if rotation < 45:
+                    object_center_degrees = rotation / 2
+
+                    meters_turned_until_object = self.object_start / 360 * self.wheel_circumference
+                    rotation_until_object = meters_turned_until_object / self.machine_circumference * 360
+
+                    rotation_until_object_center = rotation_until_object + object_center_degrees if rotation_until_object > 0 else rotation_until_object - object_center_degrees
+                    result = rotation_until_object_center if rotation_until_object_center > 0 else 360 + rotation_until_object_center
+                    self.object_center_points.append(result)
+
+                self.object_start = 0
+                self.object_end = 0
+
+
+
+    def get_front_middle_laser(self) -> None | float:
+        """
+        Return the filtered value.
+
+        Returns:
+          None if filter is empty, filtered value otherwise.
+        """
+        self.sensor_data.append(self.middle_laser)
+        if len(self.sensor_data) > 5:
+            self.sensor_data.pop(0)
+        median = statistics.median(self.sensor_data)
+        return median if median != 0 else None
 
     def move_forward(self):
         """Set robot movement to forward."""
@@ -99,23 +140,27 @@ class Robot:
         self.left_base_speed = -self.left_wheel_speed
         self.right_base_speed = self.right_wheel_speed
 
-    def normal_movement(self):
-        """Operate on 'train' track, without crossways."""
-        if self.leftsecond < 400:
-            self.move_left()
-        elif self.rightsecond < 400:
-            self.move_right()
-        elif self.leftthird < 400 or self.rightthird < 400:
-            self.move_forward()
-        elif self.rightmost < 400:
-            self.move_right()
-        elif self.leftmost < 400:
-            self.move_left()
-        else:
-            if self.last == "right":
-                self.move_right()
+    def turn_to_object(self):
+        """
+        Turn to the object.
+        """
+        if len(self.object_center_points) > 0:
+            if self.object_center_points[0] <= 180:
+                if self.current_rotation < self.object_center_points[0]:
+                    print(self.current_rotation)
+                    self.move_left_on_place()
             else:
-                self.move_left()
+                if self.current_rotation > self.object_center_points[0]:
+                    print(self.current_rotation)
+                    self.move_right_on_place()
+
+    def sense(self):
+        """Sense method as per SPA architecture."""
+        self.current_right_encoder = self.robot.get_right_wheel_encoder()
+        self.current_left_encoder = self.robot.get_left_wheel_encoder()
+
+        self.current_rotation = self.robot.get_rotation()
+        self.middle_laser = self.robot.get_front_middle_laser()
 
     def plan(self):
         """
@@ -126,23 +171,19 @@ class Robot:
            0: Robot is on the line (i.e., the robot should not turn to stay on the line) or no sensor info
            1: Line is on the left (i.e., the robot should turn left to reach the line again)
         """
-        if self.state == "calibrate":
-            print("i am in calibration mode please wait")
+        if not self.calibrated:
             self.left_wheel_speed = 20
             self.right_wheel_speed = 20
-            if self.current_rotation < 360 * 3 and not self.calibrated:
+            if self.current_rotation < 360 * 1:
                 self.move_left_on_place()
                 self.max_left_encoder = abs(self.current_left_encoder)
                 self.max_right_encoder = abs(self.current_right_encoder)
+                self.add_objects()
             else:
+                self.calibrate()
                 self.calibrated = True
-                self.move_right_on_place()
-                if self.current_rotation <= 0:
-                    self.calibrate()
-                    self.state = "unknown"
-                    return
-            self.state = "calibrate"
-            return
+        else:
+            self.turn_to_object()
 
 
     def act(self):
