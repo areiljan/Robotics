@@ -82,7 +82,7 @@ class Robot:
                 difference = abs(self.object_end - self.object_start)
                 meters_turned = difference / 360 * self.wheel_circumference
                 rotation = meters_turned / self.machine_circumference * 360
-                if rotation < 45:
+                if True:
                     object_center_degrees = rotation / 2
 
                     meters_turned_until_object = self.object_start / 360 * self.wheel_circumference
@@ -166,6 +166,8 @@ class Robot:
                     self.move_right_on_place()
                 else:
                     self.state = "move_to_object"
+        else:
+            self.add_objects()
 
     def sense(self):
         """Sense method as per SPA architecture."""
@@ -204,7 +206,7 @@ class Robot:
 
     def act(self):
         """Act according to plan."""
-        # print("middle laser: " + str(self.get_front_middle_laser()))
+        print("middle laser: " + str(self.get_front_middle_laser()), "current rotation:",  str(self.current_rotation))
         print("points: " + str(self.object_center_points), " state: ", self.state)
         self.robot.set_left_wheel_speed(self.left_base_speed)
         self.robot.set_right_wheel_speed(self.right_base_speed)
