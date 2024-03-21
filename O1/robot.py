@@ -110,43 +110,43 @@ class Robot:
 
     def move_forward(self):
         """Set robot movement to forward."""
-        self.state = "forward"
+        # self.state = "forward"
         self.left_base_speed = self.left_wheel_speed
         self.right_base_speed = self.right_wheel_speed
 
     def move_backward(self):
         """Set robot movement to backward."""
-        self.state = "backward"
+        # self.state = "backward"
         self.left_base_speed = -self.left_wheel_speed
         self.right_base_speed = -self.right_wheel_speed
 
     def move_right(self):
         """Set robot movement to right."""
-        self.state = "right"
+        # self.state = "right"
         self.left_base_speed = self.left_wheel_speed
         self.right_base_speed = -self.right_wheel_speed + 2 * self.right_factor
 
     def move_left(self):
         """Set robot movement to left."""
-        self.state = "left"
+        # self.state = "left"
         self.left_base_speed = -self.left_wheel_speed + 2 * self.left_factor
         self.right_base_speed = self.right_wheel_speed
 
     def move_right_on_place(self):
         """Set robot movement to right."""
-        self.state = "right"
+        # self.state = "right"
         self.left_base_speed = self.left_wheel_speed
         self.right_base_speed = -self.right_wheel_speed
 
     def move_left_on_place(self):
         """Set robot movement to left."""
-        self.state = "left"
+        # self.state = "left"
         self.left_base_speed = -self.left_wheel_speed
         self.right_base_speed = self.right_wheel_speed
 
     def stop(self):
         """Set robot movement to halt."""
-        self.state = "stop"
+        # self.state = "stop"
         self.left_base_speed = 0
         self.right_base_speed = 0
 
@@ -156,7 +156,7 @@ class Robot:
         """
         if len(self.object_center_points) > 0:
             adjusted_current_rotation = self.object_center_points[0] % 360
-            if self.object_center_points[0] >= 180:
+            if self.object_center_points[0] <= 180:
                 if adjusted_current_rotation < self.object_center_points[0]:
                     self.move_left_on_place()
                 else:
@@ -203,10 +203,9 @@ class Robot:
         elif self.state == "move_to_object":
             self.stop()
 
-
     def act(self):
         """Act according to plan."""
-        print("middle laser: " + str(self.get_front_middle_laser()), "current rotation:",  str(self.current_rotation))
+        print("middle laser: " + str(self.get_front_middle_laser()), "current rotation:", str(self.current_rotation))
         print("points: " + str(self.object_center_points), " state: ", self.state)
         self.robot.set_left_wheel_speed(self.left_base_speed)
         self.robot.set_right_wheel_speed(self.right_base_speed)
