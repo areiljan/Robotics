@@ -1,6 +1,8 @@
 """EX04 - Objects."""
 import math
 import statistics
+from typing import Optional
+
 import PiBot
 
 
@@ -93,7 +95,7 @@ class Robot:
                 self.object_start = 0
                 self.object_end = 0
 
-    def get_front_middle_laser(self) -> None | float:
+    def get_front_middle_laser(self) -> Optional[float]:
         """
         Return the filtered value.
 
