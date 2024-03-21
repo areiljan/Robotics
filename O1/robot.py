@@ -60,7 +60,7 @@ class Robot:
 
         print("Corrections made", self.right_factor, self.left_factor)
 
-    def add_objects(self) -> list:
+    def add_objects(self):
         """
         Return the list with the detected objects so far.
 
@@ -194,7 +194,8 @@ class Robot:
             else:
                 self.calibrate()
                 self.calibrated = True
-                self.state = "turn_to_object"
+                self.stop()
+                #self.state = "turn_to_object"
         elif self.state == "turn_to_object":
             self.turn_to_object()
         elif self.state == "move_to_object":
