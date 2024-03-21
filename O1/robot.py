@@ -150,7 +150,6 @@ class Robot:
         """
         if len(self.object_center_points) > 0:
             if self.object_center_points[0] <= 180:
-                print("points: " + str(self.object_center_points))
                 if self.current_rotation < self.object_center_points[0]:
                     print(self.current_rotation)
                     self.move_left_on_place()
@@ -164,7 +163,7 @@ class Robot:
         self.current_right_encoder = self.robot.get_right_wheel_encoder()
         self.current_left_encoder = self.robot.get_left_wheel_encoder()
 
-        self.current_rotation = self.robot.get_rotation()
+        self.current_rotation = round(self.robot.get_rotation() % 360)
         self.middle_laser = self.robot.get_front_middle_laser()
 
     def plan(self):
@@ -192,8 +191,7 @@ class Robot:
 
     def act(self):
         """Act according to plan."""
-        print("LeftSpeed: " + str(self.left_base_speed) + " RightSpeed: " + str(self.right_base_speed))
-        print("CurrentRotation: " + str(self.current_rotation))
+        print("points: " + str(self.object_center_points))
         self.robot.set_left_wheel_speed(self.left_base_speed)
         self.robot.set_right_wheel_speed(self.right_base_speed)
 
