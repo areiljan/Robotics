@@ -13,7 +13,7 @@ class Robot:
         """Class initialization."""
         self.robot = PiBot.PiBot()
         self.shutdown = False
-        self.state = "unknown"
+        self.state = "calibrate"
 
         self.left_wheel_speed = 10
         self.right_wheel_speed = 10
@@ -155,7 +155,7 @@ class Robot:
         Turn to the object.
         """
         if len(self.object_center_points) > 0:
-            adjusted_current_rotation = self.object_center_points[0] % 360
+            adjusted_current_rotation = self.current_rotation % 360
             if self.object_center_points[0] <= 180:
                 if adjusted_current_rotation < self.object_center_points[0]:
                     self.move_left_on_place()
