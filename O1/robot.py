@@ -3,6 +3,7 @@ import math
 import statistics
 import PiBot
 
+
 class Robot:
     """The robot class."""
 
@@ -14,6 +15,9 @@ class Robot:
 
         self.left_wheel_speed = 10
         self.right_wheel_speed = 10
+
+        self.right_base_speed = 0
+        self.left_base_speed = 0
 
         self.wheel_circumference = self.robot.WHEEL_DIAMETER * math.pi
         self.machine_circumference = self.robot.AXIS_LENGTH * math.pi
@@ -183,9 +187,9 @@ class Robot:
         else:
             self.turn_to_object()
 
-
     def act(self):
         """Act according to plan."""
+        print("LeftSpeed: " + str(self.left_base_speed) + " RightSpeed: " + str(self.right_base_speed))
         self.robot.set_left_wheel_speed(self.left_base_speed)
         self.robot.set_right_wheel_speed(self.right_base_speed)
 
@@ -197,10 +201,12 @@ class Robot:
             self.act()
             self.robot.sleep(0.05)
 
+
 def main():
     """Execute the main loop."""
     robot = Robot()
     robot.spin()
+
 
 if __name__ == "__main__":
     main()
