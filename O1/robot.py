@@ -169,7 +169,7 @@ class Robot:
         """
         if len(self.object_center_points) > 0:
             adjusted_current_rotation = self.current_rotation % 360
-            if self.object_center_points[0] - 2 <= adjusted_current_rotation <= self.object_center_points[0] + 2:
+            if self.object_center_points[0] < adjusted_current_rotation:
                 self.state = "move_to_object"
             else:
                 self.move_left_on_place()
