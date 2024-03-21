@@ -75,7 +75,7 @@ class Robot:
           right 90 degrees is 270 degrees).
         """
         middle_laser = self.get_front_middle_laser()
-        if middle_laser is not None and middle_laser > 1.9:
+        if middle_laser is not None and middle_laser == 2.0:
             if self.object_start == 0:
                 self.object_start = self.current_right_encoder
             self.object_end = self.current_right_encoder
@@ -85,7 +85,7 @@ class Robot:
                 meters_turned = difference / 360 * self.wheel_circumference
                 rotation = meters_turned / self.machine_circumference * 360
                 print(rotation)
-                if rotation < 45:
+                if True:
                     object_center_degrees = rotation / 2
 
                     meters_turned_until_object = self.object_start / 360 * self.wheel_circumference
