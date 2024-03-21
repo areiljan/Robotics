@@ -89,8 +89,6 @@ class Robot:
                 self.object_start = 0
                 self.object_end = 0
 
-
-
     def get_front_middle_laser(self) -> None | float:
         """
         Return the filtered value.
@@ -199,12 +197,10 @@ class Robot:
             self.act()
             self.robot.sleep(0.05)
 
-
 def main():
     """Execute the main loop."""
     robot = Robot()
     robot.spin()
-
 
 if __name__ == "__main__":
     main()
