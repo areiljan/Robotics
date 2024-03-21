@@ -74,7 +74,8 @@ class Robot:
           the right-hand rule (e.g., turning left 90 degrees is 90, turning
           right 90 degrees is 270 degrees).
         """
-        middle_laser = self.get_front_middle_laser()
+        # middle_laser = self.get_front_middle_laser()
+        middle_laser = self.middle_laser
         if middle_laser is not None and middle_laser == 2.0:
             if self.object_start == 0:
                 self.object_start = self.current_right_encoder
