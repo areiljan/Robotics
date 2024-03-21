@@ -1,7 +1,7 @@
 """EX04 - Objects."""
 import math
 import statistics
-
+import PiBot
 
 class Robot:
     """The robot class."""
