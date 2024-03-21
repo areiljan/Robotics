@@ -150,6 +150,7 @@ class Robot:
         """
         if len(self.object_center_points) > 0:
             if self.object_center_points[0] <= 180:
+                print("points: " + self.object_center_points)
                 if self.current_rotation < self.object_center_points[0]:
                     print(self.current_rotation)
                     self.move_left_on_place()
