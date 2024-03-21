@@ -42,6 +42,8 @@ class Robot:
         self.sensor_data = []
         self.middle_laser = 0
 
+        self.find_starting_rotation = 0
+
     def set_robot(self, robot: PiBot.PiBot()) -> None:
         """Set robot reference."""
         self.robot = robot
@@ -150,6 +152,15 @@ class Robot:
         self.left_base_speed = 0
         self.right_base_speed = 0
 
+    def find_objects(self):
+        """Find objects around robot."""
+        # self.state = "find"
+        if self.current_rotation < self.find_starting_rotation + 360:
+            self.move_left_on_place()
+            self.add_objects()
+        else:
+            self.state = "turn_to_object"
+
     def turn_to_object(self):
         """
         Turn to the object.
@@ -189,15 +200,17 @@ class Robot:
         if not self.calibrated:
             self.left_wheel_speed = 20
             self.right_wheel_speed = 20
-            if self.current_rotation < 360 * 1:
+            if self.current_rotation < 360 * 3:
                 self.move_left_on_place()
                 self.max_left_encoder = abs(self.current_left_encoder)
                 self.max_right_encoder = abs(self.current_right_encoder)
-                self.add_objects()
             else:
                 self.calibrate()
                 self.calibrated = True
-                self.state = "turn_to_object"
+                self.state = "find_objects"
+                self.find_starting_rotation = self.current_rotation
+        elif self.state == "find_objects":
+            self.find_objects()
         elif self.state == "turn_to_object":
             self.turn_to_object()
         elif self.state == "move_to_object":
