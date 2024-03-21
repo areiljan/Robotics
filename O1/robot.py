@@ -154,14 +154,16 @@ class Robot:
         """
         Turn to the object.
         """
+        adjusted_current_rotation = self.object_center_points[0] % 360
+
         if len(self.object_center_points) > 0:
             if self.object_center_points[0] <= 180:
-                if self.current_rotation < self.object_center_points[0]:
+                if adjusted_current_rotation < self.object_center_points[0]:
                     self.move_left_on_place()
                 else:
                     self.state = "move_to_object"
             else:
-                if self.current_rotation > self.object_center_points[0]:
+                if adjusted_current_rotation > self.object_center_points[0]:
                     self.move_right_on_place()
                 else:
                     self.state = "move_to_object"
@@ -171,7 +173,7 @@ class Robot:
         self.current_right_encoder = self.robot.get_right_wheel_encoder()
         self.current_left_encoder = self.robot.get_left_wheel_encoder()
 
-        self.current_rotation = round(self.robot.get_rotation() % 360)
+        self.current_rotation = self.robot.get_rotation()
         self.middle_laser = self.robot.get_front_middle_laser()
 
     def plan(self):
@@ -194,8 +196,7 @@ class Robot:
             else:
                 self.calibrate()
                 self.calibrated = True
-                self.stop()
-                #self.state = "turn_to_object"
+                self.state = "turn_to_object"
         elif self.state == "turn_to_object":
             self.turn_to_object()
         elif self.state == "move_to_object":
