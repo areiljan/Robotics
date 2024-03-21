@@ -89,7 +89,7 @@ class Robot:
                     rotation_until_object = meters_turned_until_object / self.machine_circumference * 360
 
                     rotation_until_object_center = rotation_until_object + object_center_degrees if rotation_until_object > 0 else rotation_until_object - object_center_degrees
-                    result = (rotation_until_object_center if rotation_until_object_center > 0 else 360 + rotation_until_object_center) % 360
+                    result = rotation_until_object_center if rotation_until_object_center > 0 else 360 + rotation_until_object_center
                     self.object_center_points.append(result)
 
                 self.object_start = 0
