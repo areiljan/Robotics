@@ -82,7 +82,7 @@ class Robot:
                 difference = abs(self.object_end - self.object_start)
                 meters_turned = difference / 360 * self.wheel_circumference
                 rotation = meters_turned / self.machine_circumference * 360
-                if True:
+                if rotation < 45:
                     object_center_degrees = rotation / 2
 
                     meters_turned_until_object = self.object_start / 360 * self.wheel_circumference
