@@ -154,9 +154,8 @@ class Robot:
         """
         Turn to the object.
         """
-        adjusted_current_rotation = self.object_center_points[0] % 360
-
         if len(self.object_center_points) > 0:
+            adjusted_current_rotation = self.object_center_points[0] % 360
             if self.object_center_points[0] <= 180:
                 if adjusted_current_rotation < self.object_center_points[0]:
                     self.move_left_on_place()
