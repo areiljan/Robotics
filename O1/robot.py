@@ -75,7 +75,7 @@ class Robot:
           right 90 degrees is 270 degrees).
         """
         middle_laser = self.get_front_middle_laser()
-        if middle_laser is not None and round(middle_laser) == 2:
+        if middle_laser is not None and middle_laser > 1.9:
             if self.object_start == 0:
                 self.object_start = self.current_right_encoder
             self.object_end = self.current_right_encoder
