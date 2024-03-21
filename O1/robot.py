@@ -150,7 +150,7 @@ class Robot:
         """
         if len(self.object_center_points) > 0:
             if self.object_center_points[0] <= 180:
-                print("points: " + self.object_center_points)
+                print("points: " + str(self.object_center_points))
                 if self.current_rotation < self.object_center_points[0]:
                     print(self.current_rotation)
                     self.move_left_on_place()
@@ -193,6 +193,7 @@ class Robot:
     def act(self):
         """Act according to plan."""
         print("LeftSpeed: " + str(self.left_base_speed) + " RightSpeed: " + str(self.right_base_speed))
+        print("CurrentRotation: " + str(self.current_rotation))
         self.robot.set_left_wheel_speed(self.left_base_speed)
         self.robot.set_right_wheel_speed(self.right_base_speed)
 
