@@ -90,7 +90,7 @@ class Robot:
 
                     rotation_until_object_center = rotation_until_object + object_center_degrees if rotation_until_object > 0 else rotation_until_object - object_center_degrees
                     result = rotation_until_object_center if rotation_until_object_center > 0 else 360 + rotation_until_object_center
-                    self.object_center_points.append(result)
+                    self.object_center_points.append(round(result) % 360)
 
                 self.object_start = 0
                 self.object_end = 0
