@@ -42,7 +42,7 @@ class Robot:
         self.sensor_data = []
         self.middle_laser = 0
 
-        self.find_starting_rotation = 0
+        self.zero_point = 0
 
     def set_robot(self, robot: PiBot.PiBot()) -> None:
         """Set robot reference."""
@@ -74,8 +74,7 @@ class Robot:
           the right-hand rule (e.g., turning left 90 degrees is 90, turning
           right 90 degrees is 270 degrees).
         """
-        # middle_laser = self.get_front_middle_laser()
-        middle_laser = self.middle_laser
+        middle_laser = self.get_front_middle_laser()
         if middle_laser is not None and middle_laser == 2.0:
             if self.object_start == 0:
                 self.object_start = self.current_right_encoder
@@ -94,7 +93,7 @@ class Robot:
 
                     rotation_until_object_center = rotation_until_object + object_center_degrees if rotation_until_object > 0 else rotation_until_object - object_center_degrees
                     result = rotation_until_object_center if rotation_until_object_center > 0 else 360 + rotation_until_object_center
-                    self.object_center_points.append(round(result - self.find_starting_rotation) % 360)
+                    self.object_center_points.append(round(result + self.zero_point) % 360)
 
                 self.object_start = 0
                 self.object_end = 0
@@ -107,7 +106,7 @@ class Robot:
           None if filter is empty, filtered value otherwise.
         """
         self.sensor_data.append(self.middle_laser)
-        if len(self.sensor_data) > 5:
+        if len(self.sensor_data) > 3:
             self.sensor_data.pop(0)
         median = statistics.median(self.sensor_data)
         return median if median != 0 else None
@@ -157,11 +156,12 @@ class Robot:
     def find_objects(self):
         """Find objects around robot."""
         # self.state = "find"
-        if self.current_rotation < self.find_starting_rotation + 360:
+        if self.current_rotation < self.zero_point + 360:
             self.move_left_on_place()
             self.add_objects()
         else:
             self.state = "turn_to_object"
+            self.zero_point = self.current_rotation
 
     def turn_to_object(self):
         """
@@ -204,7 +204,7 @@ class Robot:
                 self.calibrate()
                 self.calibrated = True
                 self.state = "find_objects"
-                self.find_starting_rotation = self.current_rotation
+                self.zero_point = self.current_rotation
         elif self.state == "find_objects":
             self.find_objects()
         elif self.state == "turn_to_object":
