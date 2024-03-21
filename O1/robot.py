@@ -89,7 +89,7 @@ class Robot:
                     rotation_until_object = meters_turned_until_object / self.machine_circumference * 360
 
                     rotation_until_object_center = rotation_until_object + object_center_degrees if rotation_until_object > 0 else rotation_until_object - object_center_degrees
-                    result = rotation_until_object_center if rotation_until_object_center > 0 else 360 + rotation_until_object_center
+                    result = (rotation_until_object_center if rotation_until_object_center > 0 else 360 + rotation_until_object_center) % 360
                     self.object_center_points.append(result)
 
                 self.object_start = 0
@@ -144,6 +144,12 @@ class Robot:
         self.left_base_speed = -self.left_wheel_speed
         self.right_base_speed = self.right_wheel_speed
 
+    def stop(self):
+        """Set robot movement to halt."""
+        self.state = "stop"
+        self.left_base_speed = 0
+        self.right_base_speed = 0
+
     def turn_to_object(self):
         """
         Turn to the object.
@@ -151,12 +157,14 @@ class Robot:
         if len(self.object_center_points) > 0:
             if self.object_center_points[0] <= 180:
                 if self.current_rotation < self.object_center_points[0]:
-                    print(self.current_rotation)
                     self.move_left_on_place()
+                else:
+                    self.state = "move_to_object"
             else:
                 if self.current_rotation > self.object_center_points[0]:
-                    print(self.current_rotation)
                     self.move_right_on_place()
+                else:
+                    self.state = "move_to_object"
 
     def sense(self):
         """Sense method as per SPA architecture."""
@@ -186,8 +194,12 @@ class Robot:
             else:
                 self.calibrate()
                 self.calibrated = True
-        else:
+                self.state = "turn_to_object"
+        elif self.state == "turn_to_object":
             self.turn_to_object()
+        elif self.state == "move_to_object":
+            self.stop()
+
 
     def act(self):
         """Act according to plan."""
