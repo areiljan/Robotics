@@ -74,7 +74,7 @@ class Robot:
           the right-hand rule (e.g., turning left 90 degrees is 90, turning
           right 90 degrees is 270 degrees).
         """
-        middle_laser = self.middle_laser
+        middle_laser = self.get_front_middle_laser()
         if middle_laser is not None and middle_laser == 2.0:
             if self.object_start == 0:
                 self.object_start = self.current_rotation
@@ -95,7 +95,7 @@ class Robot:
           None if filter is empty, filtered value otherwise.
         """
         self.sensor_data.append(self.middle_laser)
-        if len(self.sensor_data) > 3:
+        if len(self.sensor_data) > 5:
             self.sensor_data.pop(0)
         median = statistics.median(self.sensor_data)
         return median if median != 0 else None
