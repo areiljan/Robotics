@@ -81,7 +81,7 @@ class Robot:
             self.object_end = self.current_rotation
         else:
             if self.object_start != 0:
-                object_middle_point = self.object_end - ((self.object_end - self.object_start) / 2)
+                object_middle_point = self.object_end #- ((self.object_end - self.object_start) / 2)
                 self.object_center_points.append(object_middle_point)
 
                 self.object_start = 0
