@@ -208,7 +208,7 @@ class Robot:
 
     def act(self):
         """Act according to plan."""
-        print("current rotation" + str(self.current_rotation))
+        print(self.get_front_middle_laser())
         self.robot.set_left_wheel_speed(self.left_base_speed)
         self.robot.set_right_wheel_speed(self.right_base_speed)
 
