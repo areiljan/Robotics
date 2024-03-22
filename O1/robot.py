@@ -202,7 +202,7 @@ class Robot:
         elif self.state == "turn_to_object":
             self.turn_to_object()
         elif self.state == "move_to_object":
-            self.stop()
+            self.move_to_object()
 
     def act(self):
         """Act according to plan."""
