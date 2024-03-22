@@ -81,19 +81,8 @@ class Robot:
             self.object_end = self.current_rotation
         else:
             if self.object_start != 0:
-                difference = abs(self.object_end - self.object_start)
-                meters_turned = difference / 360 * self.wheel_circumference
-                rotation = meters_turned / self.machine_circumference * 360
-                print(rotation)
-                if True:
-                    object_center_degrees = rotation / 2
-
-                    meters_turned_until_object = self.object_start / 360 * self.wheel_circumference
-                    rotation_until_object = meters_turned_until_object / self.machine_circumference * 360
-
-                    rotation_until_object_center = rotation_until_object + object_center_degrees if rotation_until_object > 0 else rotation_until_object - object_center_degrees
-                    result = rotation_until_object_center if rotation_until_object_center > 0 else 360 + rotation_until_object_center
-                    self.object_center_points.append(round(result) % 360)
+                object_middle_point = self.object_end - ((self.object_end - self.object_start) / 2)
+                self.object_center_points.append(object_middle_point)
 
                 self.object_start = 0
                 self.object_end = 0
@@ -156,7 +145,7 @@ class Robot:
     def find_objects(self):
         """Find objects around robot."""
         # self.state = "find"
-        if self.current_rotation < self.startpoint + 360:
+        if len(self.object_center_points) < 1:
             self.move_left_on_place()
             self.add_objects()
         else:
@@ -166,14 +155,10 @@ class Robot:
         """
         Turn to the object.
         """
-        if len(self.object_center_points) > 0:
-            adjusted_current_rotation = self.current_rotation % 360
-            if self.object_center_points[0] < adjusted_current_rotation:
-                self.state = "move_to_object"
-            else:
-                self.move_left_on_place()
+        if self.current_rotation > self.object_center_points[0]:
+            self.move_right_on_place()
         else:
-            self.add_objects()
+            self.state = "move_to_object"
 
     def sense(self):
         """Sense method as per SPA architecture."""
@@ -203,7 +188,6 @@ class Robot:
                 self.calibrate()
                 self.calibrated = True
                 self.state = "find_objects"
-                self.startpoint = self.current_rotation
         elif self.state == "find_objects":
             self.find_objects()
         elif self.state == "turn_to_object":
