@@ -75,7 +75,7 @@ class Robot:
           right 90 degrees is 270 degrees).
         """
         middle_laser = self.get_front_middle_laser()
-        if middle_laser is not None and middle_laser < 0.5:
+        if middle_laser is not None and middle_laser < 0.6:
             if self.object_start == 0:
                 self.object_start = self.current_rotation
             self.object_end = self.current_rotation
@@ -164,7 +164,7 @@ class Robot:
         """
         Move to the object.
         """
-        if self.middle_laser > 0.15:
+        if self.middle_laser > 0.11:
             self.move_forward()
         else:
             print("Welcome home")
