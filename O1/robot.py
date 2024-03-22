@@ -197,6 +197,7 @@ class Robot:
             else:
                 self.calibrate()
                 self.calibrated = True
+                self.stop()
                 self.state = "find_objects"
         elif self.state == "find_objects":
             self.find_objects()
@@ -207,7 +208,6 @@ class Robot:
 
     def act(self):
         """Act according to plan."""
-        print("middle laser: " + str(self.middle_laser), "points: " + str(self.object_center_points))
         print("current rotation" + str(self.current_rotation))
         self.robot.set_left_wheel_speed(self.left_base_speed)
         self.robot.set_right_wheel_speed(self.right_base_speed)
