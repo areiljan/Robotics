@@ -50,15 +50,15 @@ class Robot:
 
     def calibrate(self):
         """Calibrate the robot."""
-        self.left_wheel_speed = 8
-        self.right_wheel_speed = 8
+        self.left_wheel_speed = 10
+        self.right_wheel_speed = 10
 
         if self.max_right_encoder > self.max_left_encoder:
             self.left_factor = round(1 + (1 - self.max_left_encoder / self.max_right_encoder), 2)
-            self.left_wheel_speed = round(20 * self.left_factor / 2.5)
+            self.left_wheel_speed = round(20 * self.left_factor / 2)
         elif self.max_right_encoder < self.max_left_encoder:
             self.right_factor = round(1 + (1 - self.max_right_encoder / self.max_left_encoder), 2)
-            self.right_wheel_speed = round(20 * self.right_factor / 2.5)
+            self.right_wheel_speed = round(20 * self.right_factor / 2)
 
         print("Corrections made", self.right_factor, self.left_factor)
 
@@ -75,7 +75,7 @@ class Robot:
           right 90 degrees is 270 degrees).
         """
         middle_laser = self.get_front_middle_laser()
-        if middle_laser is not None and middle_laser == 2.0:
+        if middle_laser is not None and middle_laser < 0.4:
             if self.object_start == 0:
                 self.object_start = self.current_rotation
             self.object_end = self.current_rotation
