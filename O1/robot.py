@@ -160,6 +160,15 @@ class Robot:
         else:
             self.state = "move_to_object"
 
+    def move_to_object(self):
+        """
+        Move to the object.
+        """
+        if self.middle_laser > 0.1:
+            self.move_forward()
+        else:
+            print("Welcome home")
+
     def sense(self):
         """Sense method as per SPA architecture."""
         self.current_right_encoder = self.robot.get_right_wheel_encoder()
