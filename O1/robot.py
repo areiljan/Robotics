@@ -97,7 +97,7 @@ class Robot:
           None if filter is empty, filtered value otherwise.
         """
         self.sensor_data.append(self.middle_laser)
-        if len(self.sensor_data) > 5:
+        if len(self.sensor_data) > 3:
             self.sensor_data.pop(0)
         median = statistics.median(self.sensor_data)
         return median if median != 0 else None
