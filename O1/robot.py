@@ -154,18 +154,14 @@ class Robot:
             self.state = "turn_to_object"
 
     def turn_to_object(self):
-        """
-        Turn to the object.
-        """
+        """Turn to the object."""
         if self.current_rotation > self.object_center_points[0]:
             self.move_right_on_place()
         else:
             self.state = "move_to_object"
 
     def move_to_object(self):
-        """
-        Move to the object.
-        """
+        """Move to the object."""
         if self.middle_laser > 0.11:
             self.move_forward()
         else:
