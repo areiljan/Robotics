@@ -50,15 +50,15 @@ class Robot:
 
     def calibrate(self):
         """Calibrate the robot."""
-        self.left_wheel_speed = 10
-        self.right_wheel_speed = 10
+        self.left_wheel_speed = 8
+        self.right_wheel_speed = 8
 
         if self.max_right_encoder > self.max_left_encoder:
             self.left_factor = round(1 + (1 - self.max_left_encoder / self.max_right_encoder), 2)
-            self.left_wheel_speed = round(20 * self.left_factor / 2)
+            self.left_wheel_speed = round(20 * self.left_factor / 2.5)
         elif self.max_right_encoder < self.max_left_encoder:
             self.right_factor = round(1 + (1 - self.max_right_encoder / self.max_left_encoder), 2)
-            self.right_wheel_speed = round(20 * self.right_factor / 2)
+            self.right_wheel_speed = round(20 * self.right_factor / 2.5)
 
         print("Corrections made", self.right_factor, self.left_factor)
 
