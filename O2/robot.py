@@ -294,6 +294,7 @@ class Robot:
         """
         if self.state == "find_objects":
             self.find_objects()
+            print(str(self.get_front_middle_laser()))
         elif self.state == "turn_to_furthest_object":
             self.turn_to_furthest_object()
         elif self.state == "hardcore_calculations":
