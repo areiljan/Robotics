@@ -1,8 +1,7 @@
-"""EX04 - Objects."""
+"""O2 - Objects."""
 import math
 import statistics
 from typing import Optional
-
 import PiBot
 
 
@@ -11,92 +10,65 @@ class Robot:
 
     def __init__(self):
         """Class initialization."""
+        # ROBOT
         self.robot = PiBot.PiBot()
         self.shutdown = False
-        self.state = "calibrate"
 
-        self.left_wheel_speed = 27
-        self.right_wheel_speed = 27
+        # STATE
+        self.state = "find_objects"
 
-        self.right_base_speed = 0
+        # LEFT WHEEL
+        self.left_wheel_speed = 8
         self.left_base_speed = 0
+        self.left_factor = 1
 
+        # RIGHT WHEEL
+        self.right_wheel_speed = 8
+        self.right_base_speed = 0
+        self.right_factor = 1
+
+        # CONSTANTS
         self.wheel_circumference = self.robot.WHEEL_DIAMETER * math.pi
         self.machine_circumference = self.robot.AXIS_LENGTH * math.pi
 
-        self.current_right_encoder = 0
+        # LEFT ENCODER
         self.current_left_encoder = 0
-        self.current_rotation = 0
+        self.max_left_encoder = 0
 
-        self.left_factor = 1
-        self.right_factor = 1
-        self.calibrated = False
-        self.objects = []
+        # RIGHT ENCODER
+        self.current_right_encoder = 0
+        self.max_right_encoder = 0
+
+        # ROTATION
+        self.current_rotation = 0
+        self.rotation_before_finding = 0
+
+        # LASER
+        self.sensor_data = []
+        self.middle_laser = 0
+
+        # OBJECT FINDING
+        self.object_start = 0
+        self.object_end = 0
+        self.object_center_points = []
+
+        # OBJECT DISTANCE
+        self.distance = 0
+        self.furthest = 0
         self.first_object_distance = 0
         self.second_object_distance = 0
-        self.current_rotation_setpoint = 0
+
+        # SPOT LOCATION
+        self.robots_spot_degrees = None
+        self.robots_spot_distance = None
 
     def set_robot(self, robot: PiBot.PiBot()) -> None:
         """Set robot reference."""
         self.robot = robot
 
-    def calibrate(self):
-        """Calibrate the robot."""
-        self.left_wheel_speed = 9
-        self.right_wheel_speed = 9
-
-        if self.max_right_encoder > self.max_left_encoder:
-            self.left_factor = round(1 + (1 - self.max_left_encoder / self.max_right_encoder), 2)
-            self.left_wheel_speed = round(27 * self.left_factor / 3)
-        elif self.max_right_encoder < self.max_left_encoder:
-            self.right_factor = round(1 + (1 - self.max_right_encoder / self.max_left_encoder), 2)
-            self.right_wheel_speed = round(27 * self.right_factor / 3)
-
-        print("Corrections made", self.left_factor, self.right_factor)
-
-    def find_objects(self):
-        if self.objects < 2:
-            self.move_right_on_place()
-        else:
-            self.state = "move_to_spot"
-            self.current_rotation_setpoint = self.current_rotation
-
-    def get_two_closest_objects_angle(self):
-        """
-        Find the closest visible object from the objects list.
-
-        Returns:
-          The angle (in radians) to the closest object w.r.t. the robot
-          orientation (i.e., 0 is directly ahead) following the right
-          hand rule (i.e., objects to the left have a plus sign and
-          objects to the right have a minus sign).
-          Must return None if no objects are visible.
-        """
-        degree_per_pixel = self.FOV[0] / self.resolution[0]
-        closest_object = self.get_closest_object()
-        camera_center_degrees = self.FOV[0] / 2
-
-        if len(closest_object) > 0:
-            object_x = closest_object[1][0]
-            object_center_degrees = object_x * degree_per_pixel
-            return math.radians(camera_center_degrees - object_center_degrees)
-        return None
-
-    def get_two_distances(self):
-        """
-        Give new values to the first_object_distance and the second_object_distance.
-
-        (i.e., add new objects to the list as you detect them).
-        """
-        if (self.current_rotation - self.current_rotation_setpoint) < self.first_object_angle:
-            # turn some way
-            # give new value to self.first_object_distance
-        if (self.current_rotation - self.current_rotation_setpoint) < self.second_object_angle:
-            # turn some way
-            # give new value to self.second_object_distance
-
-    def hardcore_calculations(self):
-        # calculate
+# ------------------------------------------------------------
+# |                    PROBLEM SOLUTION                      |
+# ------------------------------------------------------------
 
     def get_front_middle_laser(self) -> Optional[float]:
         """
@@ -105,11 +77,107 @@ class Robot:
         Returns:
           None if filter is empty, filtered value otherwise.
         """
-        self.sensor_data.append(self.middle_laser)
-        if len(self.sensor_data) > 3:
-            self.sensor_data.pop(0)
-        median = statistics.median(self.sensor_data)
-        return median if median != 0 else None
+        return self.middle_laser
+
+    def add_objects(self):
+        """
+        Return the list with the detected objects so far.
+
+        (i.e., add new objects to the list as you detect them).
+
+        Returns:
+          The list with detected object angles, the angles are in
+          degrees [0..360), 0 degrees being the start angle and following
+          the right-hand rule (e.g., turning left 90 degrees is 90, turning
+          right 90 degrees is 270 degrees).
+        """
+        middle_laser = self.get_front_middle_laser()
+        if middle_laser is not None and middle_laser < 0.7:
+            if self.object_start == 0:
+                self.object_start = self.current_rotation
+            if middle_laser > self.distance:
+                self.distance = middle_laser
+            self.object_end = self.current_rotation
+        else:
+            if self.object_start != 0:
+                object_degrees = self.object_end - self.object_start
+                if object_degrees < 15:
+                    object_middle_point = self.object_end - (object_degrees / 2)
+                    self.object_center_points.append(object_middle_point)
+                    if self.first_object_distance == 0:
+                        self.first_object_distance = self.distance
+                    elif self.first_object_distance != 0 and self.second_object_distance == 0:
+                        self.second_object_distance = self.distance
+                    print("added object at:", object_middle_point, "with distance:", self.first_object_distance if self.second_object_distance == 0 else self.second_object_distance )
+
+                self.object_start = 0
+                self.object_end = 0
+                self.distance = 0
+
+    def find_objects(self):
+        """Find objects around robot."""
+        if self.current_rotation < self.rotation_before_finding + 360:
+            self.move_left_on_place()
+            self.add_objects()
+            if len(self.object_center_points) == 2:
+                self.stop()
+                if self.first_object_distance > self.second_object_distance:
+                    self.furthest = self.object_center_points[0]
+                else:
+                    self.furthest = self.object_center_points[1]
+                self.state = "turn_to_furthest_object"
+                print("objects found:", self.object_center_points)
+
+    def turn_to_furthest_object(self):
+        """Turn to the furthest object."""
+        if self.current_rotation > self.furthest:
+            self.move_right_on_place()
+        else:
+            self.stop()
+            print("looking at the furthest object")
+            self.state = "hardcore_calculations"
+
+    def hardcore_calculations(self):
+        """Do calculations in order to find corrects spot for robot."""
+        d1 = self.first_object_distance  # robot's distance from first object
+        print("d1:", d1)
+        d2 = self.second_object_distance  # robot's distance from second object
+        print("d2:", d2)
+        delta_a = abs(self.object_center_points[1] - self.object_center_points[0])  # degrees between objects
+        if delta_a > 180:
+            delta_a = 360 - delta_a
+        print("delta alpha:", delta_a)
+        r = math.sqrt(d1 ** 2 + d2 ** 2 - 2 * d1 * d2 * math.cos(math.radians(delta_a)))  # distance between objects
+        print("r:", r)
+        corner_b = math.degrees(math.acos((r ** 2 + d2 ** 2 - d1 ** 2) / (2 * r * d2)))  # corner between r and d2
+        print("beta", corner_b)
+        x = math.sqrt(r ** 2 + d2 ** 2 - 2 * r * d2 * math.cos(math.radians(60 - corner_b)))  # distance from robots correct spot
+        print("x:", x)
+        corner_l = math.degrees(math.acos((d2 ** 2 + x ** 2 - r ** 2) / (2 * r * d2)))  # corner between d2 and x
+        print("lambda:", corner_l)
+
+        self.robots_spot_distance = x
+
+        self.robots_spot_degrees = self.current_rotation + corner_l
+        # self.robots_spot_degrees = self.current_rotation - corner_l
+
+        print("current rotation:", self.current_rotation, "spot degrees:", self.robots_spot_degrees)
+        self.state = "move_to_spot"
+
+    def move_to_spot(self):
+        """Guide robot to the correct spot in order to make equilateral triangle."""
+        if self.current_rotation > self.robots_spot_degrees + 1:
+            self.move_right_on_place()
+        elif self.current_rotation < self.robots_spot_degrees - 1:
+            self.move_left_on_place()
+        else:
+            self.stop()
+            print("Looking towards spot")
+            # Move self.robots_spot_distance amount forward... BUT HOW? encoders are the answer :( --- they suck
+
+# ------------------------------------------------------------
+# |                      MOVEMENT                            |
+# ------------------------------------------------------------
 
     def move_forward(self):
         """Set robot movement to forward."""
@@ -146,15 +214,16 @@ class Robot:
         self.left_base_speed = 0
         self.right_base_speed = 0
 
+# ------------------------------------------------------------
+# |                          SPA                             |
+# ------------------------------------------------------------
     def sense(self):
         """Sense method as per SPA architecture."""
         self.current_right_encoder = self.robot.get_right_wheel_encoder()
         self.current_left_encoder = self.robot.get_left_wheel_encoder()
 
         self.current_rotation = self.robot.get_rotation()
-        self.objects = self.robot.get_camera_objects()
         self.middle_laser = self.robot.get_front_middle_laser()
-
 
     def plan(self):
         """
@@ -165,28 +234,17 @@ class Robot:
            0: Robot is on the line (i.e., the robot should not turn to stay on the line) or no sensor info
            1: Line is on the left (i.e., the robot should turn left to reach the line again)
         """
-        if not self.calibrated:
-            self.left_wheel_speed = 27
-            self.right_wheel_speed = 27
-            if self.current_rotation < 360 * 3:
-                self.move_left_on_place()
-                self.max_left_encoder = abs(self.current_left_encoder)
-                self.max_right_encoder = abs(self.current_right_encoder)
-            else:
-                self.calibrate()
-                self.calibrated = True
-                self.stop()
-                self.state = "find_objects"
-        elif self.state == "find_objects":
+        if self.state == "find_objects":
             self.find_objects()
-        elif self.state == "find_object_distance":
-            self.find_distance()
+        elif self.state == "turn_to_furthest_object":
+            self.turn_to_furthest_object()
+        elif self.state == "hardcore_calculations":
+            self.hardcore_calculations()
         elif self.state == "move_to_spot":
-
+            self.move_to_spot()
 
     def act(self):
         """Act according to plan."""
-        print(self.robot.get_front_middle_laser(), self.get_front_middle_laser(), self.object_center_points)
         self.robot.set_left_wheel_speed(self.left_base_speed)
         self.robot.set_right_wheel_speed(self.right_base_speed)
 
@@ -197,6 +255,11 @@ class Robot:
             self.plan()
             self.act()
             self.robot.sleep(0.05)
+
+
+# ------------------------------------------------------------
+# |                          MAIN                            |
+# ------------------------------------------------------------
 
 
 def main():
