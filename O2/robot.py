@@ -110,7 +110,7 @@ class Robot:
           right 90 degrees is 270 degrees).
         """
         middle_laser = self.get_front_middle_laser()
-        if middle_laser is not None and middle_laser < 1.0:
+        if middle_laser is not None and middle_laser < 0.7:
             if self.object_start == 0:
                 self.object_start = self.current_rotation
             if middle_laser > self.distance:
@@ -119,7 +119,7 @@ class Robot:
         else:
             if self.object_start != 0:
                 object_degrees = self.object_end - self.object_start
-                if object_degrees < 15:
+                if object_degrees < 30:
                     object_middle_point = self.object_end - (object_degrees / 2)
                     self.object_center_points.append(object_middle_point)
                     if self.first_object_distance == 0:
