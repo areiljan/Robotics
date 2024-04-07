@@ -192,8 +192,8 @@ class Robot:
             self.stop()
             print("Looking towards spot")
             self.state = "move_to_spot"
-            self.x_to_move = self.x * math.sin(self.current_rotation)
-            self.y_to_move = self.x * math.cos(self.current_rotation)
+            self.x_to_move = abs(self.x * math.sin(self.current_rotation))
+            self.y_to_move = abs(self.x * math.cos(self.current_rotation))
             print("Locations to move: x: " + str(self.x_to_move) + " y: " + str(self.y_to_move))
             # Move self.robots_spot_distance amount forward... BUT HOW? encoders are the answer :( --- they suck
 
