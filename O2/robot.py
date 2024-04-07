@@ -177,7 +177,6 @@ class Robot:
         print("lambda:", corner_l)
 
         self.robots_spot_distance = self.x
-
         self.robots_spot_degrees = self.current_rotation - corner_l
         # self.robots_spot_degrees = self.current_rotation - corner_l
 
