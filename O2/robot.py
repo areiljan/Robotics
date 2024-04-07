@@ -190,16 +190,16 @@ class Robot:
             self.move_left_on_place()
         else:
             self.stop()
-            print("Looking towards spot")
-            self.state = "move_to_spot"
             self.x_to_move = abs(self.x * math.sin(self.current_rotation))
             self.y_to_move = abs(self.x * math.cos(self.current_rotation))
             print("Locations to move: x: " + str(self.x_to_move) + " y: " + str(self.y_to_move))
+            print("Looking towards spot")
+            self.state = "move_to_spot"
             # Move self.robots_spot_distance amount forward... BUT HOW? encoders are the answer :( --- they suck
 
     def move_towards_spot(self):
         """Guide robot to the correct spot in order to make equilateral triangle."""
-        if abs(self.encoder_x) < 0.1 and abs(self.encoder_y) < 0.1:
+        if abs(self.encoder_x) < self.x_to_move and abs(self.encoder_y) < self.y_to_move:
             self.move_forward()
         else:
             self.stop()
