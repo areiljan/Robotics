@@ -266,6 +266,8 @@ class Robot:
         self.delta_left_encoder = self.left_encoder - self.last_left_encoder
         self.delta_right_encoder = self.right_encoder - self.last_right_encoder
         self.calculate_encoder_odometry()
+        self.last_left_encoder = self.left_encoder
+        self.last_right_encoder = self.right_encoder
 
     def plan(self):
         """
