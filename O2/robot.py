@@ -202,13 +202,14 @@ class Robot:
         if abs(self.encoder_x) < self.x_to_move and abs(self.encoder_y) < self.y_to_move:
             self.move_forward()
         # Move self.robots_spot_distance amount forward... BUT HOW? encoders are the answer :( --- they suck
+        print("x: " + str(self.encoder_x) + " y:" + str(self.encoder_y) + " yaw: " + str(self.encoder_yaw))
+
 
     def calculate_encoder_odometry(self):
         """Calculate the encoder odometry values."""
         self.encoder_yaw += (self.robot.WHEEL_DIAMETER / 2 / self.robot.AXIS_LENGTH) * (self.delta_right_encoder - self.delta_left_encoder)
         self.encoder_x += (self.robot.WHEEL_DIAMETER / 4) * (self.delta_left_encoder + self.delta_right_encoder) * math.cos(self.encoder_yaw)
         self.encoder_y += (self.robot.WHEEL_DIAMETER / 4) * (self.delta_left_encoder + self.delta_right_encoder) * math.sin(self.encoder_yaw)
-        # print("x: " + str(self.encoder_x) + " y:" + str(self.encoder_y) + " yaw: " + str(self.encoder_yaw))
 
     def get_encoder_odometry(self):
         """
