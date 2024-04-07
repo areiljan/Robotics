@@ -132,7 +132,7 @@ class Robot:
                 self.object_start = 0
                 self.object_end = 0
                 self.distance = 0
-        if 0.16 < self.first_object_distance > 0.24 or self.first_object_distance < 0.16:
+        if self.first_object_distance < 0.16:
             self.add = False
 
     def find_objects(self):
@@ -206,7 +206,6 @@ class Robot:
         """Guide robot to the correct spot in order to make equilateral triangle."""
         if abs(self.encoder_x) < self.y_to_move and abs(self.encoder_y) < self.x_to_move:
             self.move_forward()
-
         else:
             self.stop()
             self.state = "finito"
