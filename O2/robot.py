@@ -181,9 +181,9 @@ class Robot:
 
         self.robots_spot_distance = self.x
         if self.add:
-            self.robots_spot_degrees = self.current_rotation + corner_l
-        else:
             self.robots_spot_degrees = self.current_rotation - corner_l
+        else:
+            self.robots_spot_degrees = self.current_rotation + corner_l
 
         print("current rotation:", self.current_rotation, "spot degrees:", self.robots_spot_degrees)
         self.state = "looking_towards_spot"
