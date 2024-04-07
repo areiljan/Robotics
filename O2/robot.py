@@ -204,7 +204,6 @@ class Robot:
 
     def calculate_encoder_odometry(self):
         """Calculate the encoder odometry values."""
-        self.yaw = self.current_rotation
         self.encoder_x += (self.robot.WHEEL_DIAMETER / 4) * (self.delta_left_encoder + self.delta_right_encoder) * math.cos(self.yaw)
         self.encoder_y += (self.robot.WHEEL_DIAMETER / 4) * (self.delta_left_encoder + self.delta_right_encoder) * math.sin(self.yaw)
         print("x: " + str(self.encoder_x) + " y:" + str(self.encoder_y) + " yaw: " + str(self.yaw))
@@ -263,13 +262,10 @@ class Robot:
 # ------------------------------------------------------------
     def sense(self):
         """Sense method as per SPA architecture."""
-        self.current_right_encoder = self.robot.get_right_wheel_encoder()
-        self.current_left_encoder = self.robot.get_left_wheel_encoder()
-
-        self.middle_laser = self.robot.get_front_middle_laser()
-
         self.left_encoder = math.radians(self.robot.get_left_wheel_encoder())
         self.right_encoder = math.radians(self.robot.get_right_wheel_encoder())
+
+        self.middle_laser = self.robot.get_front_middle_laser()
 
         self.delta_left_encoder = self.left_encoder - self.last_left_encoder
         self.delta_right_encoder = self.right_encoder - self.last_right_encoder
