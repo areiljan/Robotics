@@ -171,7 +171,11 @@ class Robot:
         print("beta", corner_b)
         self.x = math.sqrt(r ** 2 + d2 ** 2 - 2 * r * d2 * math.cos(math.radians(60 - corner_b)))  # distance from robots correct spot
         print("x:", self.x)
-        corner_l = math.degrees(math.acos((d2 ** 2 + self.x ** 2 - r ** 2) / (2 * r * d2)))  # corner between d2 and x
+        result = (d2 ** 2 + self.x ** 2 - r ** 2) / (2 * r * d2)
+        if result > 1:
+            # Subtract one from the result
+            result -= 1
+        corner_l = math.degrees(math.acos(result))  # corner between d2 and x
         print("lambda:", corner_l)
 
         self.robots_spot_distance = self.x
