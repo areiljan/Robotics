@@ -62,6 +62,19 @@ class Robot:
         self.robots_spot_degrees = None
         self.robots_spot_distance = None
 
+        # ODOMETRICS
+        self.right_encoder = 0
+        self.last_right_encoder = 0
+        self.delta_right_encoder = 0
+
+        self.left_encoder = 0
+        self.last_left_encoder = 0
+        self.delta_left_encoder = 0
+
+        self.encoder_x = 0
+        self.encoder_y = 0
+        self.encoder_yaw = 0
+
     def set_robot(self, robot: PiBot.PiBot()) -> None:
         """Set robot reference."""
         self.robot = robot
@@ -164,7 +177,7 @@ class Robot:
         print("current rotation:", self.current_rotation, "spot degrees:", self.robots_spot_degrees)
         self.state = "move_to_spot"
 
-    def move_to_spot(self):
+    def looking_towards_spot(self):
         """Guide robot to the correct spot in order to make equilateral triangle."""
         if self.current_rotation > self.robots_spot_degrees + 1:
             self.move_right_on_place()
@@ -173,7 +186,30 @@ class Robot:
         else:
             self.stop()
             print("Looking towards spot")
+            self.state = "move_towards_spot"
             # Move self.robots_spot_distance amount forward... BUT HOW? encoders are the answer :( --- they suck
+
+    def move_towards_spot(self):
+        """Guide robot to the correct spot in order to make equilateral triangle."""
+
+        # Move self.robots_spot_distance amount forward... BUT HOW? encoders are the answer :( --- they suck
+
+    def calculate_encoder_odometry(self):
+        """Calculate the encoder odometry values."""
+        self.encoder_yaw += (self.robot.WHEEL_DIAMETER / 2 / self.robot.AXIS_LENGTH) * (self.delta_right_encoder - self.delta_left_encoder)
+        self.encoder_x += (self.robot.WHEEL_DIAMETER / 4) * (self.delta_left_encoder + self.delta_right_encoder) * math.cos(self.encoder_yaw)
+        self.encoder_y += (self.robot.WHEEL_DIAMETER / 4) * (self.delta_left_encoder + self.delta_right_encoder) * math.sin(self.encoder_yaw)
+        print("x: " + str(self.encoder_x) + " y:" + str(self.encoder_y) + " yaw: " + str(self.encoder_yaw))
+
+    def get_encoder_odometry(self):
+        """
+        Return the encoder odometry.
+
+        Returns:
+           A tuple with x, y coordinates and yaw angle (x, y, yaw)
+           based on encoder data. The units must be (meters, meters, radians).
+        """
+        return self.encoder_x, self.encoder_y, self.encoder_yaw
 
 # ------------------------------------------------------------
 # |                      MOVEMENT                            |
@@ -225,6 +261,12 @@ class Robot:
         self.current_rotation = self.robot.get_rotation()
         self.middle_laser = self.robot.get_front_middle_laser()
 
+        self.left_encoder = math.radians(self.robot.get_left_wheel_encoder())
+        self.right_encoder = math.radians(self.robot.get_right_wheel_encoder())
+        self.delta_left_encoder = self.left_encoder - self.last_left_encoder
+        self.delta_right_encoder = self.right_encoder - self.last_right_encoder
+        self.calculate_encoder_odometry()
+
     def plan(self):
         """
         Return the direction of the line based on sensor readings.
@@ -240,9 +282,10 @@ class Robot:
             self.turn_to_furthest_object()
         elif self.state == "hardcore_calculations":
             self.hardcore_calculations()
+        elif self.state == "looking_towards_spot":
+            self.looking_towards_spot()
         elif self.state == "move_to_spot":
-            self.move_to_spot()
-
+            self.move_towards_spot()
     def act(self):
         """Act according to plan."""
         self.robot.set_left_wheel_speed(self.left_base_speed)
