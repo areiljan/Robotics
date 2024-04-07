@@ -180,7 +180,7 @@ class Robot:
 
         self.robots_spot_distance = self.x
 
-        self.robots_spot_degrees = self.current_rotation + corner_l
+        self.robots_spot_degrees = self.current_rotation - corner_l
         # self.robots_spot_degrees = self.current_rotation - corner_l
 
         print("current rotation:", self.current_rotation, "spot degrees:", self.robots_spot_degrees)
