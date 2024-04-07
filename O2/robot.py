@@ -201,6 +201,9 @@ class Robot:
         """Guide robot to the correct spot in order to make equilateral triangle."""
         if abs(self.encoder_x) < self.x_to_move and abs(self.encoder_y) < self.y_to_move:
             self.move_forward()
+        else:
+            self.stop()
+            self.state = "finito"
         # Move self.robots_spot_distance amount forward... BUT HOW? encoders are the answer :( --- they suck
         print("x: " + str(self.encoder_x) + " y:" + str(self.encoder_y) + " yaw: " + str(self.encoder_yaw))
 
@@ -299,6 +302,8 @@ class Robot:
             self.looking_towards_spot()
         elif self.state == "move_to_spot":
             self.move_towards_spot()
+        elif self.state == "finito":
+            pass
     def act(self):
         """Act according to plan."""
         self.robot.set_left_wheel_speed(self.left_base_speed)
