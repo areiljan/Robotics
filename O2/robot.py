@@ -175,7 +175,7 @@ class Robot:
         # self.robots_spot_degrees = self.current_rotation - corner_l
 
         print("current rotation:", self.current_rotation, "spot degrees:", self.robots_spot_degrees)
-        self.state = "move_to_spot"
+        self.state = "looking_towards_spot"
 
     def looking_towards_spot(self):
         """Guide robot to the correct spot in order to make equilateral triangle."""
