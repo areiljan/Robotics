@@ -62,6 +62,11 @@ class Robot:
         self.robots_spot_degrees = None
         self.robots_spot_distance = None
 
+        # CALCULATIONS
+        self.x = 0
+        self.x_to_move = 0
+        self.y_to_move = 0
+
         # ODOMETRICS
         self.right_encoder = 0
         self.last_right_encoder = 0
@@ -164,12 +169,12 @@ class Robot:
         print("r:", r)
         corner_b = math.degrees(math.acos((r ** 2 + d2 ** 2 - d1 ** 2) / (2 * r * d2)))  # corner between r and d2
         print("beta", corner_b)
-        x = math.sqrt(r ** 2 + d2 ** 2 - 2 * r * d2 * math.cos(math.radians(60 - corner_b)))  # distance from robots correct spot
-        print("x:", x)
-        corner_l = math.degrees(math.acos((d2 ** 2 + x ** 2 - r ** 2) / (2 * r * d2)))  # corner between d2 and x
+        self.x = math.sqrt(r ** 2 + d2 ** 2 - 2 * r * d2 * math.cos(math.radians(60 - corner_b)))  # distance from robots correct spot
+        print("x:", self.x)
+        corner_l = math.degrees(math.acos((d2 ** 2 + self.x ** 2 - r ** 2) / (2 * r * d2)))  # corner between d2 and x
         print("lambda:", corner_l)
 
-        self.robots_spot_distance = x
+        self.robots_spot_distance = self.x
 
         self.robots_spot_degrees = self.current_rotation + corner_l
         # self.robots_spot_degrees = self.current_rotation - corner_l
@@ -187,11 +192,14 @@ class Robot:
             self.stop()
             print("Looking towards spot")
             self.state = "move_towards_spot"
+            self.x_to_move = self.x * math.sin(self.yaw % 180)
+            self.y_to_move = self.x * math.cos(self.yaw % 180)
             # Move self.robots_spot_distance amount forward... BUT HOW? encoders are the answer :( --- they suck
 
     def move_towards_spot(self):
         """Guide robot to the correct spot in order to make equilateral triangle."""
-
+        if self.encoder_x < self.x_to_move & self.encoder_y < self.y_to_move:
+            self.move_forward()
         # Move self.robots_spot_distance amount forward... BUT HOW? encoders are the answer :( --- they suck
 
     def calculate_encoder_odometry(self):
