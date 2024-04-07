@@ -16,6 +16,7 @@ class Robot:
 
         # STATE
         self.state = "find_objects"
+        self.add = True
 
         # LEFT WHEEL
         self.left_wheel_speed = 8
@@ -131,6 +132,8 @@ class Robot:
                 self.object_start = 0
                 self.object_end = 0
                 self.distance = 0
+        if round(self.first_object_distance, 2) != 0.21:
+            self.add = False
 
     def find_objects(self):
         """Find objects around robot."""
@@ -177,7 +180,10 @@ class Robot:
         print("lambda:", corner_l)
 
         self.robots_spot_distance = self.x
-        self.robots_spot_degrees = self.current_rotation - corner_l
+        if self.add:
+            self.robots_spot_degrees = self.current_rotation + corner_l
+        else:
+            self.robots_spot_degrees = self.current_rotation - corner_l
         # self.robots_spot_degrees = self.current_rotation - corner_l
 
         print("current rotation:", self.current_rotation, "spot degrees:", self.robots_spot_degrees)
