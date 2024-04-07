@@ -198,7 +198,7 @@ class Robot:
 
     def move_towards_spot(self):
         """Guide robot to the correct spot in order to make equilateral triangle."""
-        if self.encoder_x < self.x_to_move and self.encoder_y < self.y_to_move:
+        if abs(self.encoder_x) < self.x_to_move and abs(self.encoder_y) < self.y_to_move:
             self.move_forward()
         # Move self.robots_spot_distance amount forward... BUT HOW? encoders are the answer :( --- they suck
 
