@@ -266,16 +266,20 @@ class Robot:
         self.current_right_encoder = self.robot.get_right_wheel_encoder()
         self.current_left_encoder = self.robot.get_left_wheel_encoder()
 
-        self.current_rotation = self.robot.get_rotation()
         self.middle_laser = self.robot.get_front_middle_laser()
 
         self.left_encoder = math.radians(self.robot.get_left_wheel_encoder())
         self.right_encoder = math.radians(self.robot.get_right_wheel_encoder())
+
         self.delta_left_encoder = self.left_encoder - self.last_left_encoder
         self.delta_right_encoder = self.right_encoder - self.last_right_encoder
+        self.current_rotation = self.robot.get_rotation()
+
         self.calculate_encoder_odometry()
+
         self.last_left_encoder = self.left_encoder
         self.last_right_encoder = self.right_encoder
+
 
     def plan(self):
         """
