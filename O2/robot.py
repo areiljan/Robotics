@@ -132,7 +132,7 @@ class Robot:
                 self.object_start = 0
                 self.object_end = 0
                 self.distance = 0
-        if round(self.first_object_distance, 2) != 0.21:
+        if 0.16 < self.first_object_distance > 0.24:
             self.add = False
 
     def find_objects(self):
