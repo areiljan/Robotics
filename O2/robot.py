@@ -194,6 +194,7 @@ class Robot:
             self.state = "move_to_spot"
             self.x_to_move = self.x * math.sin(self.current_rotation)
             self.y_to_move = self.x * math.cos(self.current_rotation)
+            print("Locations to move: x: " + str(self.x_to_move) + " y: " + str(self.y_to_move))
             # Move self.robots_spot_distance amount forward... BUT HOW? encoders are the answer :( --- they suck
 
     def move_towards_spot(self):
@@ -207,7 +208,7 @@ class Robot:
         self.encoder_yaw += (self.robot.WHEEL_DIAMETER / 2 / self.robot.AXIS_LENGTH) * (self.delta_right_encoder - self.delta_left_encoder)
         self.encoder_x += (self.robot.WHEEL_DIAMETER / 4) * (self.delta_left_encoder + self.delta_right_encoder) * math.cos(self.encoder_yaw)
         self.encoder_y += (self.robot.WHEEL_DIAMETER / 4) * (self.delta_left_encoder + self.delta_right_encoder) * math.sin(self.encoder_yaw)
-        print("x: " + str(self.encoder_x) + " y:" + str(self.encoder_y) + " yaw: " + str(self.encoder_yaw))
+        # print("x: " + str(self.encoder_x) + " y:" + str(self.encoder_y) + " yaw: " + str(self.encoder_yaw))
 
     def get_encoder_odometry(self):
         """
