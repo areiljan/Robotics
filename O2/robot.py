@@ -200,7 +200,7 @@ class Robot:
 
     def move_towards_spot(self):
         """Guide robot to the correct spot in order to make equilateral triangle."""
-        if abs(self.encoder_x) < self.y_to_move or abs(self.encoder_y) < self.x_to_move:
+        if abs(self.encoder_x) < self.y_to_move and abs(self.encoder_y) < self.x_to_move:
             self.move_forward()
 
         else:
