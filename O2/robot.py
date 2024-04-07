@@ -78,7 +78,6 @@ class Robot:
 
         self.encoder_x = 0
         self.encoder_y = 0
-        self.yaw = 0
 
     def set_robot(self, robot: PiBot.PiBot()) -> None:
         """Set robot reference."""
@@ -192,8 +191,8 @@ class Robot:
             self.stop()
             print("Looking towards spot")
             self.state = "move_to_spot"
-            self.x_to_move = self.x * math.sin(self.yaw % 180)
-            self.y_to_move = self.x * math.cos(self.yaw % 180)
+            self.x_to_move = self.x * math.sin(self.current_rotation % 180)
+            self.y_to_move = self.x * math.cos(self.current_rotation % 180)
             # Move self.robots_spot_distance amount forward... BUT HOW? encoders are the answer :( --- they suck
 
     def move_towards_spot(self):
@@ -204,9 +203,9 @@ class Robot:
 
     def calculate_encoder_odometry(self):
         """Calculate the encoder odometry values."""
-        self.encoder_x += (self.robot.WHEEL_DIAMETER / 4) * (self.delta_left_encoder + self.delta_right_encoder) * math.cos(self.yaw)
-        self.encoder_y += (self.robot.WHEEL_DIAMETER / 4) * (self.delta_left_encoder + self.delta_right_encoder) * math.sin(self.yaw)
-        print("x: " + str(self.encoder_x) + " y:" + str(self.encoder_y) + " yaw: " + str(self.yaw))
+        self.encoder_x += (self.robot.WHEEL_DIAMETER / 4) * (self.delta_left_encoder + self.delta_right_encoder) * math.cos(self.current_rotation)
+        self.encoder_y += (self.robot.WHEEL_DIAMETER / 4) * (self.delta_left_encoder + self.delta_right_encoder) * math.sin(self.current_rotation)
+        print("x: " + str(self.encoder_x) + " y:" + str(self.encoder_y) + " yaw: " + str(self.current_rotation))
 
     def get_encoder_odometry(self):
         """
@@ -216,7 +215,7 @@ class Robot:
            A tuple with x, y coordinates and yaw angle (x, y, yaw)
            based on encoder data. The units must be (meters, meters, radians).
         """
-        return self.encoder_x, self.encoder_y, self.yaw
+        return self.encoder_x, self.encoder_y, self.current_rotation
 
 # ------------------------------------------------------------
 # |                      MOVEMENT                            |
