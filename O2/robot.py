@@ -73,7 +73,7 @@ class Robot:
 
         self.encoder_x = 0
         self.encoder_y = 0
-        self.encoder_yaw = 0
+        self.yaw = 0
 
     def set_robot(self, robot: PiBot.PiBot()) -> None:
         """Set robot reference."""
@@ -196,10 +196,10 @@ class Robot:
 
     def calculate_encoder_odometry(self):
         """Calculate the encoder odometry values."""
-        self.encoder_yaw += (self.robot.WHEEL_DIAMETER / 2 / self.robot.AXIS_LENGTH) * (self.delta_right_encoder - self.delta_left_encoder)
-        self.encoder_x += (self.robot.WHEEL_DIAMETER / 4) * (self.delta_left_encoder + self.delta_right_encoder) * math.cos(self.encoder_yaw)
-        self.encoder_y += (self.robot.WHEEL_DIAMETER / 4) * (self.delta_left_encoder + self.delta_right_encoder) * math.sin(self.encoder_yaw)
-        print("x: " + str(self.encoder_x) + " y:" + str(self.encoder_y) + " yaw: " + str(self.encoder_yaw))
+        self.yaw = self.current_rotation
+        self.encoder_x += (self.robot.WHEEL_DIAMETER / 4) * (self.delta_left_encoder + self.delta_right_encoder) * math.cos(self.yaw)
+        self.encoder_y += (self.robot.WHEEL_DIAMETER / 4) * (self.delta_left_encoder + self.delta_right_encoder) * math.sin(self.yaw)
+        print("x: " + str(self.encoder_x) + " y:" + str(self.encoder_y) + " yaw: " + str(self.yaw))
 
     def get_encoder_odometry(self):
         """
@@ -209,7 +209,7 @@ class Robot:
            A tuple with x, y coordinates and yaw angle (x, y, yaw)
            based on encoder data. The units must be (meters, meters, radians).
         """
-        return self.encoder_x, self.encoder_y, self.encoder_yaw
+        return self.encoder_x, self.encoder_y, self.yaw
 
 # ------------------------------------------------------------
 # |                      MOVEMENT                            |
