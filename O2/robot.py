@@ -195,7 +195,6 @@ class Robot:
             print("Locations to move: x: " + str(self.x_to_move) + " y: " + str(self.y_to_move))
             print("Looking towards spot")
             self.state = "move_to_spot"
-            # Move self.robots_spot_distance amount forward... BUT HOW? encoders are the answer :( --- they suck
 
     def move_towards_spot(self):
         """Guide robot to the correct spot in order to make equilateral triangle."""
