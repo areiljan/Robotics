@@ -1,6 +1,5 @@
 """O2 - Objects."""
 import math
-import statistics
 from typing import Optional
 import PiBot
 
@@ -16,7 +15,6 @@ class Robot:
 
         # STATE
         self.state = "find_objects"
-        self.add = True
 
         # LEFT WHEEL
         self.left_wheel_speed = 8
@@ -61,14 +59,13 @@ class Robot:
 
         # SPOT LOCATION
         self.robots_spot_degrees = None
-        self.robots_spot_distance = None
 
         # CALCULATIONS
         self.x = 0
-        self.x_to_move = 0
         self.y_to_move = 0
+        self.x_to_move = 0
 
-        # ODOMETRICS
+        # ODOMETER
         self.right_encoder = 0
         self.last_right_encoder = 0
         self.delta_right_encoder = 0
@@ -80,6 +77,10 @@ class Robot:
         self.encoder_x = 0
         self.encoder_y = 0
         self.encoder_yaw = 0
+
+        # HELPERS
+        self.tick = 0
+        self.add = False
 
     def set_robot(self, robot: PiBot.PiBot()) -> None:
         """Set robot reference."""
@@ -127,13 +128,13 @@ class Robot:
                         self.first_object_distance = self.distance
                     elif self.first_object_distance != 0 and self.second_object_distance == 0:
                         self.second_object_distance = self.distance
-                    print("added object at:", object_middle_point, "with distance:", self.first_object_distance if self.second_object_distance == 0 else self.second_object_distance )
+                    print("added object at:", object_middle_point, "with distance:", self.first_object_distance if self.second_object_distance == 0 else self.second_object_distance)
 
                 self.object_start = 0
                 self.object_end = 0
                 self.distance = 0
-        if self.first_object_distance < 0.16:
-            self.add = False
+        if 0.18 < self.first_object_distance < 0.24 and 0.39 < self.second_object_distance < 0.44:
+            self.add = True
 
     def find_objects(self):
         """Find objects around robot."""
@@ -174,19 +175,35 @@ class Robot:
         print("beta", corner_b)
         self.x = math.sqrt(r ** 2 + d2 ** 2 - 2 * r * d2 * math.cos(math.radians(60 - corner_b)))  # distance from robots correct spot
         print("x:", self.x)
-        result = (d2 ** 2 + self.x ** 2 - r ** 2) / (2 * r * d2)
-        result = min(1, max(-1, result))
-        corner_l = math.degrees(math.acos(result))  # corner between d2 and x
-        print("lambda:", corner_l)
+        inside_corner_l = (d2 ** 2 + self.x ** 2 - r ** 2) / (2 * r * d2)
+        if -1 <= inside_corner_l <= 1:
+            corner_l = math.degrees(math.acos(inside_corner_l))  # corner between d2 and x
+            print("lambda:", corner_l)
 
-        self.robots_spot_distance = self.x
-        if self.add:
-            self.robots_spot_degrees = self.current_rotation - corner_l
+            if self.add:
+                self.robots_spot_degrees = self.current_rotation + corner_l
+            else:
+                self.robots_spot_degrees = self.current_rotation - corner_l
+
+            self.state = "looking_towards_spot"
         else:
-            self.robots_spot_degrees = self.current_rotation + corner_l
+            self.state = "reset"
 
-        print("current rotation:", self.current_rotation, "spot degrees:", self.robots_spot_degrees)
-        self.state = "looking_towards_spot"
+    def reset(self):
+        """Reset to looking for objects."""
+        self.tick += 1
+        if self.tick < 80:
+            self.move_forward()
+        else:
+            self.object_center_points = []
+            self.first_object_distance = 0
+            self.second_object_distance = 0
+            self.first_object_distance = 0
+            self.x = 0
+            self.tick = 0
+            self.encoder_x = 0
+            self.encoder_y = 0
+            self.state = "find_objects"
 
     def looking_towards_spot(self):
         """Guide robot to the correct spot in order to make equilateral triangle."""
@@ -196,38 +213,27 @@ class Robot:
             self.move_left_on_place()
         else:
             self.stop()
-            self.x_to_move = abs(self.x * math.sin(self.current_rotation))
-            self.y_to_move = abs(self.x * math.cos(self.current_rotation))
-            print("Locations to move: x: " + str(self.x_to_move) + " y: " + str(self.y_to_move))
+            self.y_to_move = abs(self.x * math.sin(self.current_rotation))
+            self.x_to_move = abs(self.x * math.cos(self.current_rotation))
+            print("Locations to move: x: " + str(self.y_to_move) + " y: " + str(self.x_to_move))
             print("Looking towards spot")
             self.state = "move_to_spot"
 
     def move_towards_spot(self):
         """Guide robot to the correct spot in order to make equilateral triangle."""
-        if abs(self.encoder_x) < self.y_to_move and abs(self.encoder_y) < self.x_to_move:
+        if abs(self.encoder_x) < self.x_to_move + 0.08 and abs(self.encoder_y) < self.y_to_move + 0.08:
             self.move_forward()
+
         else:
             self.stop()
             self.state = "finito"
-        # Move self.robots_spot_distance amount forward... BUT HOW? encoders are the answer :( --- they suck
         print("x: " + str(self.encoder_x) + " y:" + str(self.encoder_y) + " yaw: " + str(self.encoder_yaw))
-
 
     def calculate_encoder_odometry(self):
         """Calculate the encoder odometry values."""
         self.encoder_yaw += (self.robot.WHEEL_DIAMETER / 2 / self.robot.AXIS_LENGTH) * (self.delta_right_encoder - self.delta_left_encoder)
         self.encoder_x += (self.robot.WHEEL_DIAMETER / 4) * (self.delta_left_encoder + self.delta_right_encoder) * math.cos(self.encoder_yaw)
         self.encoder_y += (self.robot.WHEEL_DIAMETER / 4) * (self.delta_left_encoder + self.delta_right_encoder) * math.sin(self.encoder_yaw)
-
-    def get_encoder_odometry(self):
-        """
-        Return the encoder odometry.
-
-        Returns:
-           A tuple with x, y coordinates and yaw angle (x, y, yaw)
-           based on encoder data. The units must be (meters, meters, radians).
-        """
-        return self.encoder_x, self.encoder_y, self.current_rotation
 
 # ------------------------------------------------------------
 # |                      MOVEMENT                            |
@@ -287,7 +293,6 @@ class Robot:
         self.last_left_encoder = self.left_encoder
         self.last_right_encoder = self.right_encoder
 
-
     def plan(self):
         """
         Return the direction of the line based on sensor readings.
@@ -297,7 +302,9 @@ class Robot:
            0: Robot is on the line (i.e., the robot should not turn to stay on the line) or no sensor info
            1: Line is on the left (i.e., the robot should turn left to reach the line again)
         """
-        if self.state == "find_objects":
+        if self.state == "reset":
+            self.reset()
+        elif self.state == "find_objects":
             self.find_objects()
             print(str(self.get_front_middle_laser()))
         elif self.state == "turn_to_furthest_object":
@@ -310,6 +317,7 @@ class Robot:
             self.move_towards_spot()
         elif self.state == "finito":
             pass
+
     def act(self):
         """Act according to plan."""
         self.robot.set_left_wheel_speed(self.left_base_speed)
