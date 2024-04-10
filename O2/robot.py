@@ -299,7 +299,7 @@ class Robot:
 
         Returns:
           -1: Line is on the right (i.e., the robot should turn right to reach the line again)
-           0: Robot is on the line (i.e., the robot should not turn to stay on the line) or no sensor info
+           0: Robot is on the line (i.e., the robot should not turn to stay on the line) or no sensor info.
            1: Line is on the left (i.e., the robot should turn left to reach the line again)
         """
         if self.state == "reset":
