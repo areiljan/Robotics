@@ -131,6 +131,8 @@ class Robot:
             q = (new_q_x, new_q_y)
             i += 1
 
+        return result
+
     def calculate_potential_field(self, point, goal):
         u_rep = self.compute_repulsion_gradient(point, tuple(self.obstacles))
         u_att = self.compute_attractor_gradient(point, goal)
