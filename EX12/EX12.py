@@ -135,22 +135,26 @@ class Robot:
         return result
 
     def calculate_potential_field(self, point, goal):
+        """Calculate potential field."""
         u_rep = self.compute_repulsion_gradient(point, tuple(self.obstacles))
         u_att = self.compute_attractor_gradient(point, goal)
-        vector = tuple(map(lambda i, j: i+j, u_rep, u_att))
+        vector = tuple(map(lambda i, j: i + j, u_rep, u_att))
         vector = self.normalize_vector(vector)
         negative_vector = (-vector[0], -vector[1])
         return negative_vector
 
     def is_in_tolerance_range(self, point, goal, tolerance):
+        """Check if point is in tolerance range of goal."""
         return not goal[0] - tolerance <= point[0] <= goal[0] + tolerance and goal[1] - tolerance <= point[1] <= goal[1] + tolerance
 
     def normalize_vector(self, vector):
+        """Normalize given vector."""
         x = vector[0]
         y = vector[1]
         x_new = 0 if x == 0 else -1 if x < 0 else 1
         y_new = 0 if y == 0 else -1 if y < 0 else 1
         return (x_new, y_new)
+
 
 def test():
     """Test the calculation."""
