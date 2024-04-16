@@ -125,10 +125,11 @@ class Robot:
         i = 0
 
         while self.is_in_tolerance_range(q, goal, goal_tolerance):
-            new_q_x = q[0] + step_size * self.calculate_potential_field(q, goal)[0]
-            new_q_y = q[1] + step_size * self.calculate_potential_field(q, goal)[1]
-            result.append((new_q_x, new_q_y))
+            potential_field = self.calculate_potential_field(q, goal)
+            new_q_x = q[0] + step_size * potential_field[0]
+            new_q_y = q[1] + step_size * potential_field[1]
             q = (new_q_x, new_q_y)
+            result.append(q)
             i += 1
 
         return result
