@@ -17,6 +17,7 @@ class Robot:
         self.wheel_circumference = self.robot.WHEEL_DIAMETER * math.pi
         self.machine_circumference = self.robot.AXIS_LENGTH * math.pi
         self.OBJECT_JUMP = 0.2
+        self.ALLOWED_ERROR = 0.05
 
         # RIGHT ENCODER
         self.right_encoder = 0
@@ -53,6 +54,10 @@ class Robot:
         self.object_end = 0
         self.object_distance = 0
         self.objects = []
+
+        # DRIVING TO OBJECT
+        self.object_angle = 0
+        self.turned_to_object = False
 
         # STATE
         self.state = "find_objects"
@@ -144,14 +149,31 @@ class Robot:
 
         return x4, y4
 
+    def drive_to_point(self, x, y):
+        if self.object_angle == 0:
+            x_distance = x - self.x
+            y_distance = y - self.y
+
+            self.object_angle = math.atan2(y_distance, x_distance)
+        if not self.turned_to_object:
+            if self.yaw > self.object_angle:
+                self.move_right_on_place()
+            else:
+                self.turned_to_object = True
+        else:
+            if (x - self.ALLOWED_ERROR <= self.x <= x + self.ALLOWED_ERROR
+                    and y - self.ALLOWED_ERROR <= self.y <= y + self.ALLOWED_ERROR):
+                return True
+            else:
+                self.move_forward()
+
     def find_objects(self):
         """Find objects around robot."""
         if self.yaw < self.rotation_before_finding + 360:
             self.move_left_on_place()
             self.add_objects()
         else:
-            # TODO
-            self.stop()
+            self.drive_to_point(self.objects[0][0], self.objects[0][1])
 
     # ------------------------------------------------------------
     # |                      MOVEMENT                            |
