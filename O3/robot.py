@@ -155,18 +155,23 @@ class Robot:
             y_distance = y - self.y
 
             self.object_angle = math.atan2(y_distance, x_distance)
+            print("turn" + str(self.object_angle))
         if not self.turned_to_object:
             if self.yaw > self.object_angle:
                 self.move_right_on_place()
+                print("turning")
             else:
                 self.turned_to_object = True
+                print("turned enough")
         else:
             if (x - self.ALLOWED_ERROR <= self.x <= x + self.ALLOWED_ERROR
                     and y - self.ALLOWED_ERROR <= self.y <= y + self.ALLOWED_ERROR):
                 self.object_angle = 0
+                print("I have arrived")
                 return True
             else:
                 self.move_forward()
+                print("driving")
                 return False
 
     def find_objects(self):
