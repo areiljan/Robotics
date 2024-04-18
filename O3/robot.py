@@ -78,8 +78,8 @@ class Robot:
         """Calculate the encoder odometry values."""
         delta_left_encoder = self.left_encoder - self.last_left_encoder
         delta_right_encoder = self.right_encoder - self.last_right_encoder
-        self.x += (self.robot.WHEEL_DIAMETER / 4) * (delta_left_encoder + delta_right_encoder) * math.cos(self.yaw)
-        self.y += (self.robot.WHEEL_DIAMETER / 4) * (delta_left_encoder + delta_right_encoder) * math.sin(self.yaw)
+        self.x += (self.robot.WHEEL_DIAMETER / 4) * (delta_left_encoder + delta_right_encoder) * math.cos(math.radians(self.yaw))
+        self.y += (self.robot.WHEEL_DIAMETER / 4) * (delta_left_encoder + delta_right_encoder) * math.sin(math.radians(self.yaw))
 
     def add_objects(self):
         """
@@ -151,7 +151,7 @@ class Robot:
             self.add_objects()
         else:
             # TODO
-            pass
+            self.stop()
 
     # ------------------------------------------------------------
     # |                      MOVEMENT                            |
