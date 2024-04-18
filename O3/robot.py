@@ -163,9 +163,11 @@ class Robot:
         else:
             if (x - self.ALLOWED_ERROR <= self.x <= x + self.ALLOWED_ERROR
                     and y - self.ALLOWED_ERROR <= self.y <= y + self.ALLOWED_ERROR):
+                self.object_angle = 0
                 return True
             else:
                 self.move_forward()
+                return False
 
     def find_objects(self):
         """Find objects around robot."""
