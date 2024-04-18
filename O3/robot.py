@@ -154,7 +154,7 @@ class Robot:
             x_distance = x - self.x
             y_distance = y - self.y
 
-            self.object_angle = math.atan2(y_distance, x_distance)
+            self.object_angle = math.degrees(math.atan2(y_distance, x_distance))
             print("turn" + str(self.object_angle))
         if not self.turned_to_object:
             if self.yaw > self.object_angle:
