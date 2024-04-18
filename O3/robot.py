@@ -171,6 +171,7 @@ class Robot:
                 return True
             else:
                 self.move_forward()
+                print(" x: " + self.x + " y: " + self.y)
                 print("driving")
                 return False
 
