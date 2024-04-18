@@ -95,38 +95,38 @@ class Robot:
         """
         middle_laser = self.get_front_middle_laser()
 
+        # START OBJECT READING
+        if abs(self.middle_laser - self.last_middle_laser) >= self.OBJECT_JUMP and not self.looking_at_object:
+            self.object_start = self.yaw
+            self.looking_at_object = True
+
+        # END OBJECT READING
+        elif abs(self.middle_laser - self.last_middle_laser) >= self.OBJECT_JUMP and self.looking_at_object:
+            self.looking_at_object = False
+
+            object_degrees = self.object_end - self.object_start  # Object with in degrees aka how many degrees robot saw object
+            object_middle_radians = math.radians(self.object_end - (object_degrees / 2))  # Object middle point in radians from 0
+
+            change_in_x = self.object_distance * math.cos(object_middle_radians)  # x value change to get to object x
+            change_in_y = self.object_distance * math.sin(object_middle_radians)  # y value change to get to object y
+
+            # OBJECT GLOBAL X AND Y
+            object_x = self.x + change_in_x
+            object_y = self.y + change_in_y
+
+            self.objects.append((object_x, object_y))  # Add tuple of object x and y to objects list
+
+            # RESETTING VALUES
+            self.object_start = 0
+            self.object_end = 0
+            self.object_distance = 0
+
         # READING OBJECT
-        if self.looking_at_object:
+        elif self.looking_at_object:
             if middle_laser > self.object_distance:  # Getting the objects middle point distance
                 self.object_distance = middle_laser
 
             self.object_end = self.yaw
-        else:
-            # START OBJECT READING
-            if self.middle_laser >= (self.last_middle_laser + self.OBJECT_JUMP):
-                self.object_start = self.yaw
-                self.looking_at_object = True
-
-            # END OBJECT READING
-            elif (self.middle_laser + self.OBJECT_JUMP) < self.last_middle_laser:
-                self.looking_at_object = False
-
-                object_degrees = self.object_end - self.object_start  # Object with in degrees aka how many degrees robot saw object
-                object_middle_radians = math.radians(self.object_end - (object_degrees / 2))  # Object middle point in radians from 0
-
-                change_in_x = self.object_distance * math.cos(object_middle_radians)  # x value change to get to object x
-                change_in_y = self.object_distance * math.sin(object_middle_radians)  # y value change to get to object y
-
-                # OBJECT GLOBAL X AND Y
-                object_x = self.x + change_in_x
-                object_y = self.y + change_in_y
-
-                self.objects.append((object_x, object_y))  # Add tuple of object x and y to objects list
-
-                # RESETTING VALUES
-                self.object_start = 0
-                self.object_end = 0
-                self.object_distance = 0
 
         self.last_middle_laser = middle_laser
 
