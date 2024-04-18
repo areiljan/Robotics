@@ -180,7 +180,11 @@ class Robot:
             self.move_left_on_place()
             self.add_objects()
         else:
-            self.drive_to_point(self.objects[0][0], self.objects[0][1])
+            self.stop()
+            self.state = "move"
+
+    def move(self):
+        self.drive_to_point(self.objects[0][0], self.objects[0][1])
 
     # ------------------------------------------------------------
     # |                      MOVEMENT                            |
@@ -249,6 +253,8 @@ class Robot:
         if self.state == "find_objects":
             self.find_objects()
             print(self.objects)
+        elif self.state == "move":
+            self.move()
 
     def act(self):
         """Act according to plan."""
