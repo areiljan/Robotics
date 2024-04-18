@@ -185,7 +185,7 @@ class Robot:
             self.state = "move"
 
     def move(self):
-        self.drive_to_point(self.objects[0][0], self.objects[0][1])
+        self.drive_to_point(0.5, 0.5)
 
     # ------------------------------------------------------------
     # |                      MOVEMENT                            |
