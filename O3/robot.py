@@ -167,6 +167,7 @@ class Robot:
             if (x - self.ALLOWED_ERROR <= self.x <= x + self.ALLOWED_ERROR
                     and y - self.ALLOWED_ERROR <= self.y <= y + self.ALLOWED_ERROR):
                 self.object_angle = 0
+                self.stop()
                 print("I have arrived")
                 return True
             else:
@@ -185,7 +186,7 @@ class Robot:
             self.state = "move"
 
     def move(self):
-        self.drive_to_point(0.5, 0.5)
+        self.drive_to_point(-0.5, -0.5)
 
     # ------------------------------------------------------------
     # |                      MOVEMENT                            |
