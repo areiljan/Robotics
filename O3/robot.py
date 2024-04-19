@@ -141,7 +141,7 @@ class Robot:
 
         self.last_middle_laser = middle_laser
 
-    def calculate_rectangle_fourth_coordinate(self, first_object, second_object, third_object):
+    def calculate_rectangles_fourth_coordinate(self, first_object, second_object, third_object):
         """Return the fourth object world coordinates."""
         x1, y1 = first_object
         x2, y2 = second_object
