@@ -366,7 +366,8 @@ class Robot:
             self.find_objects()
         if self.state == "find_again":
             self.drive_to_point((1, 1));
-            self.state = "find_objects"
+            if self.drive_to_point((1, 1)):
+                self.state = "find_objects"
         elif self.state == "move":
             self.go_to_fourth_point()
         elif self.state == "finish":
