@@ -141,6 +141,66 @@ class Robot:
 
         self.last_middle_laser = middle_laser
 
+    # def find_third_object(self):
+    #     """Triggers only when the third object was not found."""
+    #     first_object = self.objects[0]
+    #     second_object = self.objects[1]
+    #     midpoint = ((first_object[0] + second_object[0]) / 2, (first_object[1] + second_object[1]) / 2)
+    #     self.third_object_finder = "drive to midpoint"  # in constructor
+    #
+    #     # drive to the midpoint
+    #     if (self.third_object_finder == "drive to midpoint"):
+    #         self.drive_to_point(midpoint[0], midpoint[1])
+    #         if (self.drive_to_point is True):
+    #             self.third_object_finder == "turn to detected object"
+    #     print(self.third_object_finder)
+    #
+    #     # turn until you see three objects.
+    #     if (self.third_object_finder == "turn to detected object" and len(self.objects) < 3):
+    #         self.move_left_on_place()
+    #         self.add_objects()
+    #         if (len(self.objects) == 3):
+    #             self.third_object_finder = "turn another 90 degrees"
+    #             self.objects.pop(3)
+    #             self.yaw_setpoint = self.yaw
+    #     print(self.third_object_finder)
+    #
+    #     if (self.third_object_finder == "turn another 90 degrees"):
+    #         if (abs(self.yaw - self.yaw_setpoint) < 90):
+    #             self.move_left_on_place()
+    #         else:
+    #             self.third_object_finder = "move"
+    #             self.yaw_setpoint = self.yaw
+    #
+    #     if (len(self.objects) < 3):
+    #         if (self.third_object_finder == "move"):
+    #             # check which axis has the bigger change
+    #             if (object[0][0] - object[1][0] > object[0][1] - object[1][1]):
+    #                 self.drive_to_point(self.x + 0.25, self.y)
+    #                 if self.drive_to_point(self.x + 0.25, self.y) is True:
+    #                     self.third_object_finder = "turn 90 degrees to scan"
+    #             else:
+    #                 self.drive_to_point(self.x, self.y + 0.25)
+    #                 if self.drive_to_point(self.x + 0.25, self.y) is True:
+    #                     self.third_object_finder = "turn 90 degrees to scan"
+    #         print(self.third_object_finder)
+    #         # turn 90 degrees to the left or until you find object
+    #         if (self.object_found == "turn 90 degrees to scan"):
+    #             if (abs(self.yaw - self.yaw_setpoint) < 90):
+    #                 self.move_left_on_place()
+    #                 self.add_objects()
+    #             else:
+    #                 self.object_found = "turn 180 degrees to scan"
+    #                 self.yaw_setpoint = self.yaw
+    #
+    #         if (self.object_found == "turn 180 degrees to scan")
+    #             # turn 180 degrees to the right or until you find object
+    #             if (len(self.objects) < 3 and not self.object_found == "turn 90 degrees to scan"):
+    #                 self.move_left_on_place()
+    #                 self.add_objects()
+    #     else:
+    #         self.state = ""
+
     def calculate_rectangles_fourth_coordinate(self, first_object, second_object, third_object):
         """Return the fourth object world coordinates."""
         x1, y1 = first_object
@@ -224,8 +284,13 @@ class Robot:
             self.move_left_on_place()
             self.add_objects()
         else:
+            if (self.objects.size() < 3): 
+                self.state = "find"
+            else:
+                self.state = "find_again"
+                self.objects.clear()
             self.stop()
-            self.state = "move"
+
 
     def go_to_fourth_point(self):
         """Go to fourth point."""
@@ -299,6 +364,9 @@ class Robot:
         """
         if self.state == "find_objects":
             self.find_objects()
+        if self.state == "find_again":
+            self.drive_to_point((1, 1));
+            self.state = "find_objects"
         elif self.state == "move":
             self.go_to_fourth_point()
         elif self.state == "finish":
