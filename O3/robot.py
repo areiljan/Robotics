@@ -366,7 +366,7 @@ class Robot:
             self.find_objects()
         if self.state == "find_again":
             self.drive_to_point((1, -1));
-            print("x: " + self.x + "y: " + self.y)
+            print("x: " + str(self.x) + "y: " + str(self.y))
             if self.drive_to_point((1, -1)):
                 self.state = "find_objects"
         elif self.state == "move":
