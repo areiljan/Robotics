@@ -285,7 +285,7 @@ class Robot:
             self.add_objects()
         else:
             if len(self.objects) < 3:
-                self.state = "find"
+                self.state = "move"
             else:
                 self.state = "find_again"
                 self.objects.clear()
