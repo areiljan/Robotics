@@ -253,7 +253,7 @@ class Robot:
         if not self.turned_to_object:
 
             # TURN RIGHT UNTIL LOOKING AT THE POINT
-            if self.yaw > self.point_angle:
+            if self.yaw > self.point_angle + 10:
                 self.move_right_on_place()
                 print("turning")
 
@@ -365,9 +365,9 @@ class Robot:
         if self.state == "find_objects":
             self.find_objects()
         if self.state == "find_again":
-            self.drive_to_point((1, -1));
+            self.drive_to_point((0.7, -0.7));
             print("x: " + str(self.x) + "y: " + str(self.y))
-            if self.drive_to_point((1, -1)):
+            if self.drive_to_point((0.7, -0.7)):
                 self.state = "find_objects"
         elif self.state == "move":
             self.go_to_fourth_point()
