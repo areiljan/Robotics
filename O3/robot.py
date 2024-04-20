@@ -17,7 +17,9 @@ class Robot:
         self.wheel_circumference = self.robot.WHEEL_DIAMETER * math.pi
         self.machine_circumference = self.robot.AXIS_LENGTH * math.pi
         self.OBJECT_JUMP = 0.3
-        self.ALLOWED_ERROR = 0.05
+        self.ALLOWED_ERROR = 0.06
+        self.FINAL_TICK_LIMIT = 70
+        self.TURNING_ERROR = 5
 
         # RIGHT ENCODER
         self.right_encoder = 0
@@ -58,6 +60,9 @@ class Robot:
         # DRIVING TO OBJECT
         self.point_angle = 0
         self.turned_to_object = False
+
+        # FINAL ADJUSTMENT
+        self.final_ticks = 0
 
         # STATE
         self.state = "find_objects"
