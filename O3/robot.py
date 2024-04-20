@@ -383,11 +383,13 @@ class Robot:
             self.drive_to_point((0.4, -0.4));
             print("x: " + str(self.x) + "y: " + str(self.y))
             if self.drive_to_point((0.4, -0.4)):
+                self.stop()
                 self.state = "drive_to_new_spot2"
         elif self.state == "drive_to_new_spot2":
             self.drive_to_point((0.2, -0.2));
             print("x: " + str(self.x) + "y: " + str(self.y))
             if self.drive_to_point((0.2, -0.2)):
+                self.stop()
                 self.state = "find_objects"
         elif self.state == "move":
             self.go_to_fourth_point()
