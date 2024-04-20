@@ -247,20 +247,17 @@ class Robot:
             y_distance = y - self.y
 
             self.point_angle = math.degrees(math.atan2(y_distance, x_distance))  # Calculate point angle
-            print("turn", self.point_angle)
 
         # ROBOT IS NOT LOOKING AT THE POINT
         if not self.turned_to_object:
 
             # TURN RIGHT UNTIL LOOKING AT THE POINT
-            if self.yaw > self.point_angle + 10:
+            if self.yaw > self.point_angle + self.TURNING_ERROR:
                 self.move_right_on_place()
-                print("turning")
 
             # HAVE TURNED ENOUGH
             else:
                 self.turned_to_object = True
-                print("turned enough")
 
         # ROBOT IS LOOKING AT THE POINT
         else:
@@ -274,7 +271,6 @@ class Robot:
             # ROBOT IS NOT IN ALLOWED ERROR RANGE FROM POINT
             else:
                 self.move_forward()
-                print("driving")
 
         return False  # Return false if not at the point
 
@@ -294,9 +290,23 @@ class Robot:
 
     def go_to_fourth_point(self):
         """Go to fourth point."""
-        forth_point = self.calculate_rectangles_fourth_coordinate(self.objects[0], self.objects[1], self.objects[2])
-        if self.drive_to_point(forth_point):
+        fourth_point = self.calculate_rectangles_fourth_coordinate(self.objects[0], self.objects[1], self.objects[2])
+        print(f"fourth point: {fourth_point} robot: ({round(self.x, 2)}, {round(self.y, 2)})")
+        if self.drive_to_point(fourth_point):
+            self.state = "final_adjustment"
+
+    def final_adjustment(self):
+        """Drive forward so robot's center is on the point."""
+        # DRIVE FORWARD SO THE ROBOT'S BODY IS ON THE POINT
+        if self.final_ticks < self.FINAL_TICK_LIMIT:
+            self.move_forward()
+            self.final_ticks += 1
+
+        # STOP MOVING
+        else:
+            self.stop()
             self.state = "finish"
+            print("I have arrived at my final location!!!!!!!")
 
     # ------------------------------------------------------------
     # |                      MOVEMENT                            |
@@ -364,16 +374,15 @@ class Robot:
         """
         if self.state == "find_objects":
             self.find_objects()
-        if self.state == "find_again":
+        elif self.state == "find_again":
             self.drive_to_point((0.7, -0.7));
             print("x: " + str(self.x) + "y: " + str(self.y))
             if self.drive_to_point((0.7, -0.7)):
                 self.state = "find_objects"
         elif self.state == "move":
             self.go_to_fourth_point()
-        elif self.state == "finish":
-            self.stop()
-            print("I have arrived at my final location!!!!!!!")
+        elif self.state == "final_adjustment":
+            self.final_adjustment()
 
     def act(self):
         """Act according to plan."""
