@@ -18,8 +18,8 @@ class Robot:
         self.machine_circumference = self.robot.AXIS_LENGTH * math.pi
         self.OBJECT_JUMP = 0.3
         self.ALLOWED_ERROR = 0.06
-        self.FINAL_TICK_LIMIT = 70
-        self.TURNING_ERROR = 5
+        self.FINAL_TICK_LIMIT = 80
+        self.TURNING_ERROR = (5 / 180) * math.pi
 
         # RIGHT ENCODER
         self.right_encoder = 0
@@ -57,9 +57,12 @@ class Robot:
         self.object_distance = 0
         self.objects = []
 
-        # DRIVING TO OBJECT
+        # DRIVING TO POINT
         self.point_angle = 0
         self.turned_to_object = False
+
+        # FOURTH POINT
+        self.fourth_point = 0
 
         # FINAL ADJUSTMENT
         self.final_ticks = 0
@@ -88,8 +91,9 @@ class Robot:
         """Calculate the encoder odometry values."""
         delta_left_encoder = self.left_encoder - self.last_left_encoder
         delta_right_encoder = self.right_encoder - self.last_right_encoder
-        self.x += (self.robot.WHEEL_DIAMETER / 4) * (delta_left_encoder + delta_right_encoder) * math.cos(math.radians(self.yaw))
-        self.y += (self.robot.WHEEL_DIAMETER / 4) * (delta_left_encoder + delta_right_encoder) * math.sin(math.radians(self.yaw))
+        self.yaw += (self.robot.WHEEL_DIAMETER / 2 / self.robot.AXIS_LENGTH) * (delta_right_encoder - delta_left_encoder)
+        self.x += (self.robot.WHEEL_DIAMETER / 4) * (delta_left_encoder + delta_right_encoder) * math.cos(self.yaw)
+        self.y += (self.robot.WHEEL_DIAMETER / 4) * (delta_left_encoder + delta_right_encoder) * math.sin(self.yaw)
 
     def add_objects(self):
         """
@@ -109,7 +113,7 @@ class Robot:
 
         # START OBJECT READING
         if abs(self.middle_laser - self.last_middle_laser) >= self.OBJECT_JUMP and not self.looking_at_object:
-            print("Hype")
+
             self.object_start = self.yaw
             self.looking_at_object = True
 
@@ -117,19 +121,19 @@ class Robot:
         elif abs(self.middle_laser - self.last_middle_laser) >= self.OBJECT_JUMP and self.looking_at_object:
             self.looking_at_object = False
 
-            print("start:", self.object_start, "end:", self.object_end)
-            object_degrees = self.object_end - self.object_start  # Object with in degrees aka how many degrees robot saw object
-            print("object degrees:", object_degrees)
-            object_middle_radians = math.radians(self.object_end - (object_degrees / 2))  # Object middle point in radians from 0
-            print("object middle radinas:", object_middle_radians)
+            object_radians = self.object_end - self.object_start  # Object with in degrees aka how many degrees robot saw object
+            object_middle_radians = self.object_end - (object_radians / 2)  # Object middle point in radians from 0
             change_in_x = self.object_distance * math.cos(object_middle_radians)  # x value change to get to object x
             change_in_y = self.object_distance * math.sin(object_middle_radians)  # y value change to get to object y
-            print("change in x:", change_in_x, "change in y:", change_in_y)
-            # OBJECT GLOBAL X AND Y
-            object_x = self.x + change_in_x
-            object_y = self.y + change_in_y
 
-            print(f"New object added: ({object_x}, {object_y})")
+            # OBJECT GLOBAL X AND Y
+            object_x = round(self.x + change_in_x, 2)
+            object_y = round(self.y + change_in_y, 2)
+
+            print("--------------------------------------------------------")
+            print(f"             New object added: ({object_x}, {object_y})             ")
+            print("--------------------------------------------------------")
+
             self.objects.append((object_x, object_y))  # Add tuple of object x and y to objects list
 
             # RESETTING VALUES
@@ -143,68 +147,6 @@ class Robot:
                 self.object_distance = middle_laser
 
             self.object_end = self.yaw
-
-        self.last_middle_laser = middle_laser
-
-    # def find_third_object(self):
-    #     """Triggers only when the third object was not found."""
-    #     first_object = self.objects[0]
-    #     second_object = self.objects[1]
-    #     midpoint = ((first_object[0] + second_object[0]) / 2, (first_object[1] + second_object[1]) / 2)
-    #     self.third_object_finder = "drive to midpoint"  # in constructor
-    #
-    #     # drive to the midpoint
-    #     if (self.third_object_finder == "drive to midpoint"):
-    #         self.drive_to_point(midpoint[0], midpoint[1])
-    #         if (self.drive_to_point is True):
-    #             self.third_object_finder == "turn to detected object"
-    #     print(self.third_object_finder)
-    #
-    #     # turn until you see three objects.
-    #     if (self.third_object_finder == "turn to detected object" and len(self.objects) < 3):
-    #         self.move_left_on_place()
-    #         self.add_objects()
-    #         if (len(self.objects) == 3):
-    #             self.third_object_finder = "turn another 90 degrees"
-    #             self.objects.pop(3)
-    #             self.yaw_setpoint = self.yaw
-    #     print(self.third_object_finder)
-    #
-    #     if (self.third_object_finder == "turn another 90 degrees"):
-    #         if (abs(self.yaw - self.yaw_setpoint) < 90):
-    #             self.move_left_on_place()
-    #         else:
-    #             self.third_object_finder = "move"
-    #             self.yaw_setpoint = self.yaw
-    #
-    #     if (len(self.objects) < 3):
-    #         if (self.third_object_finder == "move"):
-    #             # check which axis has the bigger change
-    #             if (object[0][0] - object[1][0] > object[0][1] - object[1][1]):
-    #                 self.drive_to_point(self.x + 0.25, self.y)
-    #                 if self.drive_to_point(self.x + 0.25, self.y) is True:
-    #                     self.third_object_finder = "turn 90 degrees to scan"
-    #             else:
-    #                 self.drive_to_point(self.x, self.y + 0.25)
-    #                 if self.drive_to_point(self.x + 0.25, self.y) is True:
-    #                     self.third_object_finder = "turn 90 degrees to scan"
-    #         print(self.third_object_finder)
-    #         # turn 90 degrees to the left or until you find object
-    #         if (self.object_found == "turn 90 degrees to scan"):
-    #             if (abs(self.yaw - self.yaw_setpoint) < 90):
-    #                 self.move_left_on_place()
-    #                 self.add_objects()
-    #             else:
-    #                 self.object_found = "turn 180 degrees to scan"
-    #                 self.yaw_setpoint = self.yaw
-    #
-    #         if (self.object_found == "turn 180 degrees to scan")
-    #             # turn 180 degrees to the right or until you find object
-    #             if (len(self.objects) < 3 and not self.object_found == "turn 90 degrees to scan"):
-    #                 self.move_left_on_place()
-    #                 self.add_objects()
-    #     else:
-    #         self.state = ""
 
     def calculate_rectangles_fourth_coordinate(self, first_object, second_object, third_object):
         """Return the fourth object world coordinates."""
@@ -233,7 +175,7 @@ class Robot:
             fourth_x = 2 * middle[0] - first_object[0]
             fourth_y = 2 * middle[1] - first_object[1]
 
-        return fourth_x, fourth_y
+        return round(fourth_x, 2), round(fourth_y, 2)
 
     def drive_to_point(self, point):
         """
@@ -251,14 +193,17 @@ class Robot:
             x_distance = x - self.x
             y_distance = y - self.y
 
-            self.point_angle = math.degrees(math.atan2(y_distance, x_distance))  # Calculate point angle
-
+            self.point_angle = math.atan2(y_distance, x_distance)  # Calculate point angle
         # ROBOT IS NOT LOOKING AT THE POINT
         if not self.turned_to_object:
 
             # TURN RIGHT UNTIL LOOKING AT THE POINT
             if self.yaw > self.point_angle + self.TURNING_ERROR:
                 self.move_right_on_place()
+
+            # TURN LEFT UNTIL LOOKING AT THE POINT
+            elif self.yaw < self.point_angle - self.TURNING_ERROR:
+                self.move_left_on_place()
 
             # HAVE TURNED ENOUGH
             else:
@@ -270,7 +215,10 @@ class Robot:
             if (x - self.ALLOWED_ERROR <= self.x <= x + self.ALLOWED_ERROR
                     and y - self.ALLOWED_ERROR <= self.y <= y + self.ALLOWED_ERROR):
                 self.stop()
+
                 self.point_angle = 0  # Reset for reuse
+                self.turned_to_object = False  # Reset for reuse
+
                 return True  # Return true if at the point
 
             # ROBOT IS NOT IN ALLOWED ERROR RANGE FROM POINT
@@ -281,23 +229,33 @@ class Robot:
 
     def find_objects(self):
         """Find objects around robot."""
-        if self.yaw < self.rotation_before_finding + 360:
+        # DO A 360 SCAN FOR OBJECTS
+        if self.yaw < self.rotation_before_finding + (math.pi * 2):
             self.move_left_on_place()
             self.add_objects()
-        else:
-            if len(self.objects) > 2:
-                self.state = "move"
-            else:
-                self.state = "drive_to_new_spot1"
-                self.objects.clear()
-            self.stop()
 
+        # AFTER 360 SCAN
+        else:
+            # IF DID NOT FIND 3 OBJECTS
+            if len(self.objects) < 3:
+                self.stop()
+                self.objects = []  # Empty objects list for later rescan
+                self.state = "drive_to_new_spot1"  # Reposition for rescan
+
+            # IF FOUND 3 OBJECTS
+            else:
+                self.stop()
+                self.fourth_point = self.calculate_rectangles_fourth_coordinate(self.objects[0], self.objects[1], self.objects[2])
+
+                print("--------------------------------------------------------")
+                print(f"               Fourth point: ({self.fourth_point[0]}, {self.fourth_point[1]})               ")
+                print("--------------------------------------------------------")
+
+                self.state = "go_to_fourth_point"
 
     def go_to_fourth_point(self):
         """Go to fourth point."""
-        fourth_point = self.calculate_rectangles_fourth_coordinate(self.objects[0], self.objects[1], self.objects[2])
-        print(f"fourth point: {fourth_point} robot: ({round(self.x, 2)}, {round(self.y, 2)})")
-        if self.drive_to_point(fourth_point):
+        if self.drive_to_point(self.fourth_point):
             self.state = "final_adjustment"
 
     def final_adjustment(self):
@@ -311,7 +269,13 @@ class Robot:
         else:
             self.stop()
             self.state = "finish"
-            print("I have arrived at my final location!!!!!!!")
+            print("         ______ _____ _   _ _____  _____ _    _ ")
+            print("        |  ____|_   _| \\ | |_   _|/ ____| |  | |")
+            print("        | |__    | | |  \\| | | | | (___ | |__| |")
+            print("        |  __|   | | | . ` | | |  \\___ \\|  __  |")
+            print("        | |     _| |_| |\\  |_| |_ ____) | |  | |")
+            print("        |_|    |_____|_| \\_|_____|_____/|_|  |_|")
+            print("                                                ")
 
     # ------------------------------------------------------------
     # |                      MOVEMENT                            |
@@ -357,12 +321,13 @@ class Robot:
     # ------------------------------------------------------------
     def sense(self):
         """Sense method as per SPA architecture."""
+        self.last_middle_laser = self.get_front_middle_laser()  # Updates one tick later
+
         self.left_encoder = math.radians(self.robot.get_left_wheel_encoder())
         self.right_encoder = math.radians(self.robot.get_right_wheel_encoder())
 
         self.middle_laser = self.robot.get_front_middle_laser()
 
-        self.yaw = self.robot.get_rotation()
         self.calculate_odometry()
 
         self.last_left_encoder = self.left_encoder
@@ -380,18 +345,16 @@ class Robot:
         if self.state == "find_objects":
             self.find_objects()
         elif self.state == "drive_to_new_spot1":
-            self.drive_to_point((0.4, -0.4))
-            print("x: " + str(self.x) + "y: " + str(self.y))
             if self.drive_to_point((0.4, -0.4)):
-                self.stop()
                 self.state = "drive_to_new_spot2"
-        elif self.state == "drive_to_new_spot2":
-            self.drive_to_point((0.2, -0.2))
-            print("x: " + str(self.x) + "y: " + str(self.y))
-            if self.drive_to_point((0.2, -0.2)):
                 self.stop()
+        elif self.state == "drive_to_new_spot2":
+            if self.drive_to_point((0.3, -0.8)):
+                self.TURNING_ERROR = (1 / 180) * math.pi  # Lower error threshold for more precision
+
                 self.state = "find_objects"
-        elif self.state == "move":
+                self.stop()
+        elif self.state == "go_to_fourth_point":
             self.go_to_fourth_point()
         elif self.state == "final_adjustment":
             self.final_adjustment()
