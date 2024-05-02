@@ -23,7 +23,9 @@ class Robot:
         self.current_right_encoder = 0
         self.current_left_encoder = 0
 
-        self.irs = None
+        self.right_side_ir = None
+        self.left_side_ir = None
+
 
         # For Calibration
         self.calibrated = False
@@ -87,7 +89,9 @@ class Robot:
         self.current_left_encoder = self.robot.get_left_wheel_encoder()
 
         self.current_rotation = self.robot.get_rotation()
-        self.irs = self.robot.get_rear_irs()
+        self.right_side_ir = self.robot.get_rear_right_side_ir()
+        self.left_side_ir = self.robot.get_rear_left_side_ir()
+
 
 
     def move_forward(self):
