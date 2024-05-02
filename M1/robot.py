@@ -95,8 +95,8 @@ class Robot:
         self.current_left_encoder = self.robot.get_left_wheel_encoder()
 
         self.current_rotation = self.robot.get_rotation()
-        self.right_side_ir = self.robot.get_rear_right_side_ir()
-        self.left_side_ir = self.robot.get_rear_left_side_ir()
+        self.right_side_ir = self.robot.get_rear_right_diagonal_ir()
+        self.left_side_ir = self.robot.get_rear_left_diagonal_ir()
 
 
 
