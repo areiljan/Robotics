@@ -280,6 +280,8 @@ class Robot:
         # (0,0)
         tile_properties = {}
         robot_x, robot_y, yaw = self.pose
+        if self.map is None:
+            return None
         for i, row in enumerate(self.map):
             for j, char in enumerate(row):
                 if char == " ":
