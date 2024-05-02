@@ -11,7 +11,7 @@ class Robot:
         """Class initialization."""
         self.robot = PiBot.PiBot()
         self.shutdown = False
-        self.state = "look_around"
+        self.state = "unknown"
 
         self.left_wheel_speed = 10
         self.right_wheel_speed = 10
@@ -23,15 +23,7 @@ class Robot:
         self.current_right_encoder = 0
         self.current_left_encoder = 0
 
-        self.left_laser = 2
-        self.middle_laser = 2
-        self.right_laser = 2
-        self.left_laser_list = []
-        self.middle_laser_list = []
-        self.right_laser_list = []
-        self.left_laser_median = 2
-        self.middle_laser_median = 2
-        self.right_laser_median = 2
+        self.irs = None
 
         # For Calibration
         self.calibrated = False
@@ -41,35 +33,11 @@ class Robot:
         self.right_factor = 1
 
         self.move_left_on_place()
+
     def set_robot(self, robot: PiBot.PiBot()) -> None:
         """Set robot reference."""
         self.robot = robot
-
-    def calculate_median(self):
-        self.left_laser_list.append(self.left_laser)
-        self.middle_laser_list.append(self.middle_laser)
-        self.right_laser_list.append(self.right_laser)
-        if len(self.middle_laser_list) > 5:
-            self.left_laser_list.pop(0)
-            self.middle_laser_list.pop(0)
-            self.right_laser_list.pop(0)
-        self.left_laser_median = statistics.median(self.left_laser_list)
-        self.middle_laser_median = statistics.median(self.middle_laser_list)
-        self.right_laser_median = statistics.median(self.right_laser_list)
-
-    def look_around(self):
-        if self.middle_laser_median > 0.2:
-            self.move_forward()
-            self.state = "drive_to_the_wall"
-
-    def drive_to_the_wall(self):
-        if self.middle_laser_median < 0.1:
-            self.stop()
-            if self.left_laser_median > self.right_laser_median:
-                self.move_left_on_place()
-            else:
-                self.move_right_on_place()
-            self.state = "drive_to_the_wall"
+        self.irs = self.robot.get_rear_irs()
 
     def plan(self):
         """
@@ -78,14 +46,8 @@ class Robot:
         Use calibrate method for realism.
         Unknown is the state, where robot should do absolutely nothing.
         """
-        self.calculate_median()
-
-        if self.state == "calibrate":
-            self.calibrate()
-        elif self.state == "look_around":
-            self.look_around()
-        elif self.state == "drive_to_the_wall":
-            self.drive_to_the_wall()
+        self.move_backward()
+        print(self.irs)
 
     def act(self):
         """Act according to plan."""
@@ -127,10 +89,6 @@ class Robot:
         self.current_left_encoder = self.robot.get_left_wheel_encoder()
 
         self.current_rotation = self.robot.get_rotation()
-
-        self.left_laser = self.robot.get_front_left_laser()
-        self.middle_laser = self.robot.get_front_middle_laser()
-        self.right_laser = self.robot.get_front_right_laser()
 
     def move_forward(self):
         """Set robot movement to forward."""
