@@ -1,8 +1,6 @@
-"""Be aMAZEd"""
-import statistics
+"""Be aMAZE."""
 
 import PiBot
-
 
 class Robot:
     """The robot class."""
@@ -11,23 +9,18 @@ class Robot:
         """Class initialization."""
         self.robot = PiBot.PiBot()
         self.shutdown = False
-        self.state = "unknown"
+        self.state = "maze"
 
-        self.left_wheel_speed = 12
-        self.right_wheel_speed = 12
+        self.left_wheel_speed = 13
+        self.right_wheel_speed = 13
         self.right_acting_speed = 0
         self.left_acting_speed = 0
-
-        self.current_rotation = 0
-
-        self.current_right_encoder = 0
-        self.current_left_encoder = 0
 
         self.right_diagonal_ir = None
         self.left_diagonal_ir = None
         self.last_right_diagonal_ir = 0
         self.last_left_diagonal_ir = 0
-
+        self.none_seen_ticks = 0
 
         # For Calibration
         self.calibrated = False
@@ -36,10 +29,28 @@ class Robot:
         self.left_factor = 1
         self.right_factor = 1
 
-
     def set_robot(self, robot: PiBot.PiBot()) -> None:
         """Set robot reference."""
         self.robot = robot
+
+    def drive_in_maze(self):
+        """Stay inbetween walls and stop, when outside the maze."""
+        if self.state == "maze":
+            self.move_backward()
+            print(self.right_diagonal_ir)
+            print(self.left_diagonal_ir)
+            if self.right_diagonal_ir > self.left_diagonal_ir:
+                self.move_backward_right()
+            elif self.right_diagonal_ir < self.left_diagonal_ir:
+                self.move_backward_left()
+
+            if (self.last_right_diagonal_ir == self.right_diagonal_ir
+                    and self.last_left_diagonal_ir == self.left_diagonal_ir):
+                self.none_seen_ticks += 1
+                if self.none_seen_ticks == 15:
+                    self.state = "idle"
+            else:
+                self.none_seen_ticks = 0
 
     def plan(self):
         """
@@ -48,20 +59,13 @@ class Robot:
         Use calibrate method for realism.
         Unknown is the state, where robot should do absolutely nothing.
         """
-        self.move_backward()
-        print(self.right_diagonal_ir)
-        print(self.left_diagonal_ir)
-        if self.right_diagonal_ir > self.left_diagonal_ir:
-            self.move_backward_right()
-        else:
-            self.move_backward_left()
-
-        if self.right_diagonal_ir == self.last_right_diagonal_ir and self.left_diagonal_ir == self.last_left_diagonal_ir:
-            self.shutdown = True
+        if self.state == "maze":
+            self.drive_in_maze()
+        elif self.state == "idle":
+            self.stop()
 
         self.last_right_diagonal_ir = self.right_diagonal_ir
         self.last_left_diagonal_ir = self.left_diagonal_ir
-
 
     def act(self):
         """Act according to plan."""
@@ -98,16 +102,8 @@ class Robot:
 
     def sense(self):
         """Sense method as per SPA architecture."""
-        """Sense method according to the SPA architecture."""
-        self.current_right_encoder = self.robot.get_right_wheel_encoder()
-        self.current_left_encoder = self.robot.get_left_wheel_encoder()
-
-        self.current_rotation = self.robot.get_rotation()
-
         self.right_diagonal_ir = self.robot.get_rear_right_diagonal_ir()
         self.left_diagonal_ir = self.robot.get_rear_left_diagonal_ir()
-
-
 
     def move_forward(self):
         """Set robot movement to forward."""
@@ -121,13 +117,13 @@ class Robot:
 
     def move_backward_right(self):
         """Set robot movement to right."""
-        self.left_acting_speed = self.left_wheel_speed - 2
+        self.left_acting_speed = -self.left_wheel_speed + 3
         self.right_acting_speed = -self.right_wheel_speed
 
     def move_backward_left(self):
         """Set robot movement to left."""
         self.left_acting_speed = -self.left_wheel_speed
-        self.right_acting_speed = self.right_wheel_speed - 2
+        self.right_acting_speed = -self.right_wheel_speed + 3
 
     def move_right_on_place(self):
         """Set robot movement to right."""
