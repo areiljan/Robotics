@@ -32,12 +32,10 @@ class Robot:
         self.left_factor = 1
         self.right_factor = 1
 
-        self.move_left_on_place()
 
     def set_robot(self, robot: PiBot.PiBot()) -> None:
         """Set robot reference."""
         self.robot = robot
-        self.irs = self.robot.get_rear_irs()
 
     def plan(self):
         """
@@ -89,6 +87,8 @@ class Robot:
         self.current_left_encoder = self.robot.get_left_wheel_encoder()
 
         self.current_rotation = self.robot.get_rotation()
+        self.irs = self.robot.get_rear_irs()
+
 
     def move_forward(self):
         """Set robot movement to forward."""
