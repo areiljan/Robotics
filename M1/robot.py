@@ -56,7 +56,7 @@ class Robot:
         else:
             self.move_backward_left()
 
-        if self.right_diagonal_ir == self.last_right_diagonal_ir and self.right_diagonal_ir == self.last_right_diagonal_ir:
+        if self.right_diagonal_ir == self.last_right_diagonal_ir and self.left_diagonal_ir == self.last_left_diagonal_ir:
             self.shutdown = True
 
         self.last_right_diagonal_ir = self.right_diagonal_ir
