@@ -288,9 +288,9 @@ class Robot:
                     distance_from_robot = self.distance_between_tiles(x, y, robot_x, robot_y)
                     distance_from_zero_coordinate = self.distance_between_tiles(0, 0, x, y)
 
-                    tile_properties[x, y] = (unknown_tiles, distance_from_robot, distance_from_zero_coordinate)
+                    tile_properties[x, y] = [unknown_tiles, distance_from_robot, distance_from_zero_coordinate]
 
-        sorted_data = sorted(tile_properties, key=lambda x: (x[1], x[2], x[3]))
+        sorted_data = sorted(tile_properties, key=lambda x: (x[0], x[1], x[2]))
         if sorted_data:
             return sorted_data[0]
         return None
