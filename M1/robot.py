@@ -49,6 +49,11 @@ class Robot:
         self.move_backward()
         print(self.right_side_ir)
         print(self.left_side_ir)
+        if self.right_side_ir > self.left_side_ir:
+            self.move_backward_left()
+        else:
+            self.move_backward_right()
+
 
     def act(self):
         """Act according to plan."""
@@ -104,6 +109,16 @@ class Robot:
         """Set robot movement to backward."""
         self.left_acting_speed = -self.left_wheel_speed
         self.right_acting_speed = -self.right_wheel_speed
+
+    def move_backward_right(self):
+        """Set robot movement to right."""
+        self.left_acting_speed = self.left_wheel_speed - 2
+        self.right_acting_speed = -self.right_wheel_speed
+
+    def move_backward_left(self):
+        """Set robot movement to left."""
+        self.left_acting_speed = -self.left_wheel_speed
+        self.right_acting_speed = self.right_wheel_speed - 2
 
     def move_right_on_place(self):
         """Set robot movement to right."""
