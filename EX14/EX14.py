@@ -292,17 +292,16 @@ class Robot:
 
                     tile_properties[x, y] = [unknown_tiles, distance_from_robot, distance_from_zero_coordinate]
 
-        sorted_data = sorted(tile_properties, key=lambda x: (x[0], x[1], x[2]))
+        sorted_data = sorted(tile_properties.items(), key=lambda x: (-x[1][0], x[1][1], x[1][2]))
         if sorted_data:
-            return sorted_data[0]
+            return sorted_data[0][0]
         return None
 
     def convert_map_index_to_world_coordinates(self, x, y):
         """Convert map index to world coordinates"""
-        new_x = x / 2
-        new_y = y / 2
+        new_x = int(x / 2)
+        new_y = int(y / 2)
         return new_x, new_y
-
 
     def count_neighbouring_unknown_tiles(self, x, y):
         """Count the neighbouring unknown tiles for each empty space."""
@@ -321,7 +320,6 @@ class Robot:
     def distance_between_tiles(self, x1, y1, x2, y2):
         """Distance between two tiles."""
         return math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
-
 
     def sense(self):
         """Define the SPA architecture sense method."""
@@ -343,19 +341,18 @@ def main():
 
 
 def test():
-    """For testing purposes."""
     robot = Robot()
     import spinzag  # or any other data file
     data = spinzag.get_data()
     robot.robot.load_data_profile(data)
     for i in range(len(data)):
-        print(f"laser = {robot.robot.get_front_middle_laser()}")
         robot.sense()
         robot.update_pose()
         robot.update_map()
-        robot.robot.sleep(1)
-    for row in robot.map:
-        print(row)
+        print(robot.get_map())
+        print(robot.find_closest_frontier())
+        print(f"laser = {robot.robot.get_front_middle_laser()}")
+        robot.robot.sleep(0.05)
 
 
 if __name__ == "__main__":
