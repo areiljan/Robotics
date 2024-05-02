@@ -290,7 +290,7 @@ class Robot:
 
                     tile_properties[x, y] = (unknown_tiles, distance_from_robot, distance_from_zero_coordinate)
 
-        sorted_data = sorted(tile_properties, key=lambda x: (x[0], x[1], x[2]))
+        sorted_data = sorted(tile_properties, key=lambda x: (x[1], x[2], x[3]))
         if sorted_data:
             return sorted_data[0]
         return None
