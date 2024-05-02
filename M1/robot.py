@@ -13,8 +13,8 @@ class Robot:
         self.shutdown = False
         self.state = "unknown"
 
-        self.left_wheel_speed = 10
-        self.right_wheel_speed = 10
+        self.left_wheel_speed = 12
+        self.right_wheel_speed = 12
         self.right_acting_speed = 0
         self.left_acting_speed = 0
 
@@ -23,8 +23,10 @@ class Robot:
         self.current_right_encoder = 0
         self.current_left_encoder = 0
 
-        self.right_side_ir = None
-        self.left_side_ir = None
+        self.right_diagonal_ir = None
+        self.left_diagonal_ir = None
+        self.last_right_diagonal_ir = 0
+        self.last_left_diagonal_ir = 0
 
 
         # For Calibration
@@ -47,12 +49,18 @@ class Robot:
         Unknown is the state, where robot should do absolutely nothing.
         """
         self.move_backward()
-        print(self.right_side_ir)
-        print(self.left_side_ir)
-        if self.right_side_ir > self.left_side_ir:
+        print(self.right_diagonal_ir)
+        print(self.left_diagonal_ir)
+        if self.right_diagonal_ir > self.left_diagonal_ir:
             self.move_backward_right()
         else:
             self.move_backward_left()
+
+        if self.right_diagonal_ir == self.last_right_diagonal_ir and self.right_diagonal_ir == self.last_right_diagonal_ir:
+            self.shutdown = True
+
+        self.last_right_diagonal_ir = self.right_diagonal_ir
+        self.last_left_diagonal_ir = self.left_diagonal_ir
 
 
     def act(self):
@@ -95,8 +103,9 @@ class Robot:
         self.current_left_encoder = self.robot.get_left_wheel_encoder()
 
         self.current_rotation = self.robot.get_rotation()
-        self.right_side_ir = self.robot.get_rear_right_diagonal_ir()
-        self.left_side_ir = self.robot.get_rear_left_diagonal_ir()
+
+        self.right_diagonal_ir = self.robot.get_rear_right_diagonal_ir()
+        self.left_diagonal_ir = self.robot.get_rear_left_diagonal_ir()
 
 
 
