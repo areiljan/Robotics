@@ -47,7 +47,8 @@ class Robot:
         Unknown is the state, where robot should do absolutely nothing.
         """
         self.move_backward()
-        print(self.irs)
+        print(self.right_side_ir)
+        print(self.left_side_ir)
 
     def act(self):
         """Act according to plan."""
