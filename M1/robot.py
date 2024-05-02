@@ -50,9 +50,9 @@ class Robot:
         print(self.right_side_ir)
         print(self.left_side_ir)
         if self.right_side_ir > self.left_side_ir:
-            self.move_backward_left()
-        else:
             self.move_backward_right()
+        else:
+            self.move_backward_left()
 
 
     def act(self):
