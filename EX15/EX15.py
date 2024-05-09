@@ -28,7 +28,7 @@ class Robot:
         self.imu_y = initial_odom[1]
         self.initial_yaw = initial_odom[2]
 
-        self.rotation = 0
+        self.rotation = None
         self.left_encoder = 0
         self.right_encoder = 0
         self.delta_left_encoder = 0
@@ -78,7 +78,8 @@ class Robot:
             or heading is unknown.
 
         """
-        return tuple(self.imu_x, self.imu_y, self.imu_yaw)
+        if self.rotation is not None:
+            return tuple(self.imu_x, self.imu_y, self.imu_yaw)
 
     def get_yaw(self):
         """Make rotation into yaw"""
