@@ -2,6 +2,7 @@
 
 import PiBot
 
+
 class Robot:
     """The robot class."""
 
