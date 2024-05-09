@@ -92,6 +92,8 @@ class Robot:
         if (270 - self.heading_tolerance < adjusted_rotation < 270 + self.heading_tolerance):
             return 270
 
+        return None
+
 
     def get_rotation(self):
         """Normalize the found rotation"""
