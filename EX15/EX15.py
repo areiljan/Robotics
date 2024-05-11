@@ -44,11 +44,12 @@ class Robot:
 
     def update_pose(self) -> None:
         """Update the robot pose."""
-        self.imu_yaw = self.get_yaw()
-        self.imu_x += (self.robot.WHEEL_DIAMETER / 4) * (self.delta_left_encoder + self.delta_right_encoder) * math.cos(
-            self.imu_yaw) / self.cell_size
-        self.imu_y += (self.robot.WHEEL_DIAMETER / 4) * (self.delta_left_encoder + self.delta_right_encoder) * math.sin(
-            self.imu_yaw) / self.cell_size
+        if self.rotation is not None:
+            self.imu_yaw = self.get_yaw()
+            self.imu_x += (self.robot.WHEEL_DIAMETER / 4) * (self.delta_left_encoder + self.delta_right_encoder) * math.cos(
+                self.imu_yaw) / self.cell_size
+            self.imu_y += (self.robot.WHEEL_DIAMETER / 4) * (self.delta_left_encoder + self.delta_right_encoder) * math.sin(
+                self.imu_yaw) / self.cell_size
 
 
     def get_pose(self) -> tuple:
@@ -83,7 +84,7 @@ class Robot:
 
     def get_yaw(self):
         """Make rotation into yaw"""
-        adjusted_rotation = self.get_rotation()
+        adjusted_rotation = self.get_adjusted_rotation()
         if (360 - self.heading_tolerance < adjusted_rotation < self.heading_tolerance):
             return 0
         if (90 - self.heading_tolerance < adjusted_rotation < 90 + self.heading_tolerance):
@@ -96,7 +97,7 @@ class Robot:
         return None
 
 
-    def get_rotation(self):
+    def get_adjusted_rotation(self):
         """Normalize the found rotation"""
         return (self.initial_yaw + self.rotation) % 360
 
