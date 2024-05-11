@@ -48,9 +48,9 @@ class Robot:
             self.imu_yaw = self.get_yaw()
             if self.imu_yaw is not None:
                 self.imu_x += (self.robot.WHEEL_DIAMETER / 4) * (self.delta_left_encoder + self.delta_right_encoder) * math.cos(
-                    self.imu_yaw) / self.cell_size
+                    self.imu_yaw)
                 self.imu_y += (self.robot.WHEEL_DIAMETER / 4) * (self.delta_left_encoder + self.delta_right_encoder) * math.sin(
-                    self.imu_yaw) / self.cell_size
+                    self.imu_yaw)
 
 
     def get_pose(self) -> tuple:
@@ -69,7 +69,7 @@ class Robot:
             the returned heading should be 90.
             If heading_tolerance=5 and actual robot heading is 84,
             the returned heading should be None.
-            If heading_tolerance=5 and atual robot heading is 93,
+            If heading_tolerance=5 and actual robot heading is 93,
             the returned heading should be 90.
           The heading = 0 means robot is facing down the x axis.
           The heading = 90 means robot is facing down the y axis.
@@ -81,7 +81,7 @@ class Robot:
 
         """
         if self.rotation is not None:
-            return (self.imu_x, self.imu_y, self.imu_yaw)
+            return int(self.imu_x / self.cell_size), int(self.imu_y / self.cell_size), self.imu_yaw
 
     def get_yaw(self):
         """Make rotation into yaw"""
