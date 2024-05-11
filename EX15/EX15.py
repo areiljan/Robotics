@@ -80,7 +80,7 @@ class Robot:
 
         """
         if self.rotation is not None:
-            return tuple(self.imu_x, self.imu_y, self.imu_yaw)
+            return (self.imu_x, self.imu_y, self.imu_yaw)
 
     def get_yaw(self):
         """Make rotation into yaw"""
