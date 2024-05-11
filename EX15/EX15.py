@@ -46,10 +46,11 @@ class Robot:
         """Update the robot pose."""
         if self.rotation is not None:
             self.imu_yaw = self.get_yaw()
-            self.imu_x += (self.robot.WHEEL_DIAMETER / 4) * (self.delta_left_encoder + self.delta_right_encoder) * math.cos(
-                self.imu_yaw) / self.cell_size
-            self.imu_y += (self.robot.WHEEL_DIAMETER / 4) * (self.delta_left_encoder + self.delta_right_encoder) * math.sin(
-                self.imu_yaw) / self.cell_size
+            if self.imu_yaw is not None:
+                self.imu_x += (self.robot.WHEEL_DIAMETER / 4) * (self.delta_left_encoder + self.delta_right_encoder) * math.cos(
+                    self.imu_yaw) / self.cell_size
+                self.imu_y += (self.robot.WHEEL_DIAMETER / 4) * (self.delta_left_encoder + self.delta_right_encoder) * math.sin(
+                    self.imu_yaw) / self.cell_size
 
 
     def get_pose(self) -> tuple:
@@ -85,13 +86,13 @@ class Robot:
     def get_yaw(self):
         """Make rotation into yaw"""
         adjusted_rotation = self.get_adjusted_rotation()
-        if (360 - self.heading_tolerance < adjusted_rotation < self.heading_tolerance):
+        if 360 - self.heading_tolerance < adjusted_rotation < self.heading_tolerance:
             return 0
-        if (90 - self.heading_tolerance < adjusted_rotation < 90 + self.heading_tolerance):
+        if 90 - self.heading_tolerance < adjusted_rotation < 90 + self.heading_tolerance:
             return 90
-        if (180 - self.heading_tolerance < adjusted_rotation < 180 + self.heading_tolerance):
+        if 180 - self.heading_tolerance < adjusted_rotation < 180 + self.heading_tolerance:
             return 180
-        if (270 - self.heading_tolerance < adjusted_rotation < 270 + self.heading_tolerance):
+        if 270 - self.heading_tolerance < adjusted_rotation < 270 + self.heading_tolerance:
             return 270
 
         return None
