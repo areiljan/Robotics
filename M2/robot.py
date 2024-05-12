@@ -88,9 +88,9 @@ class Robot:
 
     def drive_forward(self):
         """Drive forward and check for signs of finish"""
-        turned = self.left_infrared < self.IR_THRESHOLD
+        self.has_turned = self.left_infrared < self.IR_THRESHOLD
 
-        if self.front_laser_reading == 2 and turned and self.left_infrared < self.IR_THRESHOLD and self.right_infrared < self.IR_THRESHOLD:
+        if self.front_laser_reading == 2 and self.has_turned and self.left_infrared < self.IR_THRESHOLD and self.right_infrared < self.IR_THRESHOLD:
             self.TIME_TO_FINISH -= 1  # a little hardcode
             if self.TIME_TO_FINISH == 0:
                 self.state = "finish"
