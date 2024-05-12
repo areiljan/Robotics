@@ -1,9 +1,6 @@
-"""O2 - Objects."""
-
+"""02."""
 import math
 import PiBot
-
-
 class Robot:
     """The robot class."""
 
@@ -90,7 +87,8 @@ class Robot:
         """Drive forward and check for signs of finish"""
         self.has_turned = self.left_infrared < self.IR_THRESHOLD
 
-        if self.front_laser_reading == 2 and self.has_turned and self.left_infrared < self.IR_THRESHOLD and self.right_infrared < self.IR_THRESHOLD:
+        if (self.front_laser_reading == 2 and self.has_turned and
+                self.left_infrared < self.IR_THRESHOLD and self.right_infrared < self.IR_THRESHOLD):
             self.TIME_TO_FINISH -= 1  # a little hardcode
             if self.TIME_TO_FINISH == 0:
                 self.state = "finish"
@@ -99,7 +97,7 @@ class Robot:
         self.move_forward()
 
     def no_wall_turn(self):
-        """Turn when not seeing a wall"""
+        """Turn when not seeing a wall."""
         self.time_driven += 1  # Add time
 
         if self.time_driven == self.TIME_TO_TURN:  # Check the time driven, so robot can start turning if driven enough
@@ -110,7 +108,6 @@ class Robot:
         self.state = "left_turn"
         self.rotation_setpoint = self.current_rotation  # Capture the current rotation to make 90-degree turn
         self.time_driven = 0
-
 
     def finish(self):
         """Stop the robot, because it has made it to the finish."""
