@@ -1,6 +1,8 @@
 """02."""
 import math
 import PiBot
+
+
 class Robot:
     """The robot class."""
 
@@ -84,11 +86,11 @@ class Robot:
         self.state = "drive"
 
     def drive_forward(self):
-        """Drive forward and check for signs of finish"""
+        """Drive forward and check for signs of finish."""
         self.has_turned = self.left_infrared < self.IR_THRESHOLD
 
-        if (self.front_laser_reading == 2 and self.has_turned and
-                self.left_infrared < self.IR_THRESHOLD and self.right_infrared < self.IR_THRESHOLD):
+        if (self.front_laser_reading == 2 and self.has_turned
+                and self.left_infrared < self.IR_THRESHOLD and self.right_infrared < self.IR_THRESHOLD):
             self.TIME_TO_FINISH -= 1  # a little hardcode
             if self.TIME_TO_FINISH == 0:
                 self.state = "finish"
