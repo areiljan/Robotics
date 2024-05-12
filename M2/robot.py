@@ -41,7 +41,7 @@ class Robot:
         self.state = "drive"
 
         # Thresholds and constants
-        self.IR_THRESHOLD = 450
+        self.IR_THRESHOLD = 500
         self.LASER_THRESHOLD = 0.06
         self.TIME_TO_TURN = 100
         self.TIME_TO_FINISH = 40
@@ -52,7 +52,6 @@ class Robot:
 
     def drive(self):
         """Drive the robot."""
-        # Check if there's a wall in front and the robot hasn't turned yet
         wall_in_front = self.front_laser_reading <= self.LASER_THRESHOLD and not self.has_turned
 
         if wall_in_front:
@@ -89,7 +88,7 @@ class Robot:
 
     def drive_forward(self):
         """Drive forward and check for signs of finish"""
-        turned = self.left_infrared > self.IR_THRESHOLD
+        turned = self.left_infrared < self.IR_THRESHOLD
 
         if self.front_laser_reading == 2 and not turned and self.left_infrared < self.IR_THRESHOLD and self.right_infrared < self.IR_THRESHOLD:
             self.TIME_TO_FINISH -= 1  # a little hardcode
